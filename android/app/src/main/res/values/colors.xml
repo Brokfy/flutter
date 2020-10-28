@@ -1,0 +1,8 @@
+<resources>
+    <!-- v1 -->
+    <!-- <color name="primary">#6097EF</color> -->
+    
+    <!-- v2 -->
+    <color name="gradientstart">#1F92F3</color>
+    <color name="gradientend">#0079DE</color>
+</resources>
