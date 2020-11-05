@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:brokfy_app/src/models/admin_model.dart';
 import 'package:brokfy_app/src/models/auth_api_response.dart';
 import 'package:brokfy_app/src/models/chat_inicial_response.dart' as chatInicial;
 import 'package:brokfy_app/src/models/chat_subir_poliza_response.dart' as chatSubirPoliza;
@@ -50,6 +53,24 @@ class ApiService {
     }
 
     return AuthApiResponse.fromJson(json.decode(response.body));
+  }
+
+  static Future<AdminModel> getAdminChat(String bearer) async {
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'authorization': 'Bearer ' + bearer,
+    };
+
+    http.Response response =
+        await http.get("$url/brokfy/get_admin", headers: headers);
+    final int statusCode = response.statusCode;
+
+    if (statusCode < 200 || statusCode > 400 || json == null) {
+      throw new Exception("No se pudo procesar la solicitud");
+    }
+    String source = Utf8Decoder().convert(response.bodyBytes);
+    AdminModel adminModel = AdminModel.fromJson(json.decode(source));
+    return adminModel;
   }
 
   // Crear Usuario
@@ -279,7 +300,7 @@ class ApiService {
     return apiResponse.access_token;    
   }
 
-  static Future<chatInicial.ChatInicialResponse> iniciarChat() async {
+  static Future<chatInicial.ChatInicialResponse> iniciarChat({String step = "1"}) async {
     try {
       AuthApiResponse auth = await _getAuth();
       String token = auth.access_token;
@@ -292,7 +313,7 @@ class ApiService {
         };
 
         http.Response response = await http.get(
-          "$url/chat/1", 
+          "$url/chat/$step", 
           headers: headers, 
         );
         int statusCode = response.statusCode;
@@ -396,5 +417,143 @@ class ApiService {
     }
     
     return null;
+  }
+
+  static Future<Map<String, dynamic>> subirPolizaSubmit(Map<String, dynamic> data, Uri uri, String filePath) async {
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      var request = new http.MultipartRequest("POST", uri);
+      request.files.add(await http.MultipartFile.fromPath("file", filePath));
+      request.fields['nombre'] = data["tipoPoliza"].tipo.toString();
+      request.fields['username'] = (await DBService.db.getAuthFirst()).username;
+      request.fields['numPoliza'] = data["nroPoliza"];
+      request.fields['idAseguradora'] =  data["aseguradora"].idAseguradora.toString();
+      request.fields['firmada'] =  "0";
+      request.fields['tipoSeguro'] = data["tipoPoliza"].id.toString();
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+        request.headers.addAll(headers);
+
+        var response = await request.send();
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          if( response.headers["www-authenticate"].contains("invalid_token") ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            var requestRetry = new http.MultipartRequest("POST", uri);
+            requestRetry.files.add(await http.MultipartFile.fromPath("file", filePath));
+            requestRetry.fields['nombre'] = data["tipoPoliza"].tipo.toString();
+            requestRetry.fields['username'] = (await DBService.db.getAuthFirst()).username;
+            requestRetry.fields['numPoliza'] = data["nroPoliza"];
+            requestRetry.fields['idAseguradora'] =  data["aseguradora"].idAseguradora.toString();
+            requestRetry.fields['firmada'] =  "0";
+            requestRetry.fields['tipoSeguro'] = data["tipoPoliza"].id.toString();
+            requestRetry.headers.addAll(headers);
+            response = await requestRetry.send();
+            statusCode = response.statusCode;
+          }
+        }
+
+        if( statusCode == 200 ) {
+          final respStr = await response.stream.bytesToString();
+          var parsedJson = json.decode(respStr);
+          return parsedJson;
+        }
+      }  
+      return null;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  static Future<bool> obtenerPolizaSubmit(Map<String, dynamic> data, Uri uri, ByteData buffer) async {
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      Uint8List bufferUint8List = buffer.buffer.asUint8List(buffer.offsetInBytes, buffer.lengthInBytes);
+      List<int> bytes = bufferUint8List.cast<int>();
+      Stream<List<int>> stream = http.ByteStream.fromBytes(bytes);
+      String username = (await DBService.db.getAuthFirst()).username;
+
+      var request = new http.MultipartRequest("POST", uri);
+      // request.files.add(await http.MultipartFile("file", stream, bytes.length));
+      request.files.add(await http.MultipartFile.fromBytes("file", bytes, filename: 'firma_$username.png'));
+      request.fields['nombre'] = data["tipoPoliza"].tipo.toString();
+      request.fields['username'] = (await DBService.db.getAuthFirst()).username;
+      request.fields['aseguradora'] =  data["aseguradora"].nombre.toString();
+      request.fields['numPoliza'] = data["nroPoliza"];
+      request.fields['firmada'] =  "1";
+      request.fields['tipoSeguro'] = data["tipoPoliza"].id.toString();
+      request.fields['idAseguradora'] =  data["aseguradora"].idAseguradora.toString();
+      request.fields['urlPoliza'] =  data["urlPoliza"].toString();
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+        request.headers.addAll(headers);
+
+        var response = await request.send();
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          if( response.headers["www-authenticate"].contains("invalid_token") ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            var requestRetry = new http.MultipartRequest("POST", uri);
+            // request.files.add(await http.MultipartFile("file", stream, bytes.length));
+            request.files.add(await http.MultipartFile.fromBytes("file", bytes, filename: 'firma_$username.png'));
+            request.fields['nombre'] = data["tipoPoliza"].tipo.toString();
+            request.fields['username'] = (await DBService.db.getAuthFirst()).username;
+            request.fields['aseguradora'] =  data["aseguradora"].nombre.toString();
+            request.fields['numPoliza'] = data["nroPoliza"];
+            request.fields['firmada'] =  "1";
+            request.fields['tipoSeguro'] = data["tipoPoliza"].id.toString();
+            request.fields['idAseguradora'] =  data["aseguradora"].idAseguradora.toString();
+            request.fields['urlPoliza'] =  data["urlPoliza"].toString();
+            requestRetry.headers.addAll(headers);
+            response = await requestRetry.send();
+            statusCode = response.statusCode;
+          }
+        }
+
+        if( statusCode == 200 || statusCode == 201 ) {
+          final respStr = await response.stream.bytesToString();
+          var parsedJson = json.decode(respStr);
+          print(parsedJson);
+          return true;
+        }
+      }  
+      return false;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  static Future<chatInicial.ChatInicialResponse> contratarPoliza() async {    
+    return await iniciarChat(step: "2");
   }
 }

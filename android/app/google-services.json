@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "606225511269",
+    "firebase_url": "https://brokfy-chat.firebaseio.com",
+    "project_id": "brokfy-chat",
+    "storage_bucket": "brokfy-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606225511269:android:0cc5bee3ff64d2bd14a78c",
+        "android_client_info": {
+          "package_name": "com.brokfy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606225511269-48te50i8dujt4fllplbsgd5njc5e7vht.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKlr8tE_4DWgMC9wOhhMW5T5hnrmi3JyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606225511269-48te50i8dujt4fllplbsgd5njc5e7vht.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "606225511269-f36trid59923qlg8hogtd7hoa28r87ls.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brokfy.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606225511269:android:bcef1d93fff86a1d14a78c",
+        "android_client_info": {
+          "package_name": "com.brokfy.chat.app.ServicioChatBrokfy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606225511269-48te50i8dujt4fllplbsgd5njc5e7vht.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKlr8tE_4DWgMC9wOhhMW5T5hnrmi3JyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606225511269-48te50i8dujt4fllplbsgd5njc5e7vht.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "606225511269-f36trid59923qlg8hogtd7hoa28r87ls.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brokfy.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

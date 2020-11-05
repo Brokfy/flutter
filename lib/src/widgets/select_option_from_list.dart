@@ -147,7 +147,7 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
                       else
                         ...filteredElements.map(
                           (e) => SimpleDialogOption(
-                            key: Key(_toMap(e)["nombre"].toString()),
+                            key: Key(_toMap(e)[widget.field].toString()),
                             child: _buildOption(e),
                             onPressed: () {
                               _selectItem(e);
@@ -234,6 +234,7 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
     return {
       'nombre': json["nombre"],
       'opcion': json["opcion"],
+      'tipo': json["tipo"],
     };
   }
 

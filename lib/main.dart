@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:brokfy_app/src/providers/foto_usuario_provider.dart';
+import 'package:brokfy_app/src/providers/admin_chat_provider.dart';
 import 'package:brokfy_app/src/providers/nuevo_usuario.dart';
+import 'package:brokfy_app/src/screens/chat_detail_page.dart';
 import 'package:brokfy_app/src/screens/crear_password_screen.dart';
 import 'package:brokfy_app/src/screens/crear_usuario_screen.dart';
 import 'package:brokfy_app/src/screens/datos_personales_screen.dart';
@@ -57,6 +59,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<NuevoUsuario>(create: (_) => NuevoUsuario()),
         ChangeNotifierProvider<FotoUsuarioProvider>(create: (_) => FotoUsuarioProvider()),
+        ChangeNotifierProvider<AdminChatProvider>(create: (_) => AdminChatProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -86,6 +89,7 @@ class MyApp extends StatelessWidget {
           'verificacion': ( BuildContext context ) => VerificacionScreen(),
           'foto_perfil': ( BuildContext context ) => FotoPerfilScreen(),
           'chat_poliza': ( BuildContext context ) => TimeoutSession(child: ChatPolizaScreen(), duration: duration,),
+          'chat_detail': ( BuildContext context ) => TimeoutSession(child: ChatDetailPage(), duration: duration,),
           'home': ( BuildContext context ) => TimeoutSession(child: HomeScreen(), duration: duration,),
         },
       ),

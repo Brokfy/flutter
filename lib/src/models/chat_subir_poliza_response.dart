@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 List<ChatSubirPolizaResponse> chatSubirPolizaResponseFromJson(String str) => List<ChatSubirPolizaResponse>.from(json.decode(str).map((x) => ChatSubirPolizaResponse.fromJson(x)));
@@ -34,18 +33,21 @@ class Opcione {
         this.id,
         this.action,
         this.data,
+        this.url,
         this.opcion,
     });
 
     int id;
     int action;
     List<Datum> data;
+    String url;
     String opcion;
 
     factory Opcione.fromJson(Map<String, dynamic> json) => Opcione(
         id: json["id"],
         action: json["action"] == null ? null : json["action"],
         data: json["data"] == null ? null : List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        url: json["url"] == null ? null : json["url"],
         opcion: json["opcion"] == null ? null : json["opcion"],
     );
 
@@ -53,6 +55,7 @@ class Opcione {
         "id": id,
         "action": action == null ? null : action,
         "data": data == null ? null : List<dynamic>.from(data.map((x) => x.toJson())),
+        "url": url == null ? null : url,
         "opcion": opcion == null ? null : opcion,
     };
 }
@@ -63,25 +66,33 @@ class Datum {
         this.nombre,
         this.telefono,
         this.enabled,
+        this.id,
+        this.tipo,
     });
 
     int idAseguradora;
     String nombre;
     String telefono;
     Enabled enabled;
+    int id;
+    String tipo;
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        idAseguradora: json["idAseguradora"],
-        nombre: json["nombre"],
-        telefono: json["telefono"],
-        enabled: enabledValues.map[json["enabled"]],
+        idAseguradora: json["idAseguradora"] == null ? null : json["idAseguradora"],
+        nombre: json["nombre"] == null ? null : json["nombre"],
+        telefono: json["telefono"] == null ? null : json["telefono"],
+        enabled: json["enabled"] == null ? null : enabledValues.map[json["enabled"]],
+        id: json["id"] == null ? null : json["id"],
+        tipo: json["tipo"] == null ? null : json["tipo"],
     );
 
     Map<String, dynamic> toJson() => {
-        "idAseguradora": idAseguradora,
-        "nombre": nombre,
-        "telefono": telefono,
-        "enabled": enabledValues.reverse[enabled],
+        "idAseguradora": idAseguradora == null ? null : idAseguradora,
+        "nombre": nombre == null ? null : nombre,
+        "telefono": telefono == null ? null : telefono,
+        "enabled": enabled == null ? null : enabledValues.reverse[enabled],
+        "id": id == null ? null : id,
+        "tipo": tipo == null ? null : tipo,
     };
 }
 
@@ -96,19 +107,23 @@ class Pregunta {
     Pregunta({
         this.id,
         this.pregunta,
+        this.anexos,
     });
 
     int id;
     String pregunta;
+    String anexos;
 
     factory Pregunta.fromJson(Map<String, dynamic> json) => Pregunta(
         id: json["id"],
         pregunta: json["pregunta"],
+        anexos: json["anexos"] == null ? null : json["anexos"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "pregunta": pregunta,
+        "anexos": anexos == null ? null : anexos,
     };
 }
 
