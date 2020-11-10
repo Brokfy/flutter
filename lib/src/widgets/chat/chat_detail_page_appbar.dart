@@ -23,7 +23,7 @@ class ChatDetailPageAppBar extends StatelessWidget
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
-      backgroundColor: Color(0xFF0079DE),
+      backgroundColor: Color(0xFF0178DE),
       flexibleSpace: SafeArea(
         child: this.isNew
             ? _appBarChatNuevo(context)
@@ -49,7 +49,7 @@ class ChatDetailPageAppBar extends StatelessWidget
                     },
                     padding: EdgeInsets.all(0.0),
                     icon: Image.asset(
-                      'images/icons/Chat_Back@3x.png',
+                      'assets/images/icons/Chat_Back@3x.png',
                       filterQuality: FilterQuality.high,
                     )),
               ),
@@ -90,7 +90,7 @@ class ChatDetailPageAppBar extends StatelessWidget
                           onPressed: () {},
                           padding: EdgeInsets.all(0.0),
                           icon: Image.asset(
-                            'images/icons/Chat_Call@3x.png',
+                            'assets/images/icons/Chat_Call@3x.png',
                             filterQuality: FilterQuality.high,
                           )),
                     ],
@@ -109,7 +109,7 @@ class ChatDetailPageAppBar extends StatelessWidget
                           onPressed: () {},
                           padding: EdgeInsets.all(0.0),
                           icon: Image.asset(
-                            'images/icons/Chat_Profile@3x.png',
+                            'assets/images/icons/Chat_Profile@3x.png',
                             filterQuality: FilterQuality.high,
                           )),
                     ],
@@ -138,51 +138,91 @@ class ChatDetailPageAppBar extends StatelessWidget
                 snapshot.data.apellidoPaterno +
                 ' ' +
                 snapshot.data.apelldioMaterno;
-            return Row(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(
-                  width: 2,
-                ),
-                CircleAvatar(
-                  backgroundImage: NetworkImage(admin.foto),
-                  maxRadius: 20,
-                ),
-                SizedBox(
-                  width: 12,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        admin.nombre,
-                        style: TextStyle(fontWeight: FontWeight.w600),
+            return Container(
+              child: Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2, // 20%
+                      child: SizedBox(
+                        height: 45.0,
+                        width: 45.0,
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            padding: EdgeInsets.all(0.0),
+                            icon: Image.asset(
+                              'assets/images/icons/Chat_Back@3x.png',
+                              filterQuality: FilterQuality.high,
+                            )),
                       ),
-                      SizedBox(
-                        height: 6,
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            admin.nombre,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
+                          ),
+                          SizedBox(
+                            height: 1,
+                          ),
+                          Text(
+                            "Asesor de seguros",
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "Online",
-                        style: TextStyle(color: Colors.green, fontSize: 12),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      flex: 2, // 20%
+                      child: SizedBox(
+                          height: 45.0,
+                          width: 45.0,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  padding: EdgeInsets.all(0.0),
+                                  icon: Image.asset(
+                                    'assets/images/icons/Chat_Call@3x.png',
+                                    filterQuality: FilterQuality.high,
+                                  )),
+                            ],
+                          )),
+                    ),
+                    Expanded(
+                      flex: 2, // 20%
+                      child: SizedBox(
+                          height: 45.0,
+                          width: 45.0,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  padding: EdgeInsets.all(0.0),
+                                  icon: Image.asset(
+                                    'assets/images/icons/Chat_Profile@3x.png',
+                                    filterQuality: FilterQuality.high,
+                                  )),
+                            ],
+                          )),
+                    ),
+                  ],
                 ),
-                Icon(
-                  Icons.more_vert,
-                  color: Colors.grey.shade700,
-                ),
-              ],
+              ),
             );
           }
         },
