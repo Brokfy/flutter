@@ -35,6 +35,7 @@ class Opcione {
         this.data,
         this.url,
         this.opcion,
+        this.endpoint,
     });
 
     int id;
@@ -42,6 +43,7 @@ class Opcione {
     List<Datum> data;
     String url;
     String opcion;
+    String endpoint;
 
     factory Opcione.fromJson(Map<String, dynamic> json) => Opcione(
         id: json["id"],
@@ -49,6 +51,7 @@ class Opcione {
         data: json["data"] == null ? null : List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
         url: json["url"] == null ? null : json["url"],
         opcion: json["opcion"] == null ? null : json["opcion"],
+        endpoint: json["endpoint"] == null ? null : json["endpoint"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -57,6 +60,7 @@ class Opcione {
         "data": data == null ? null : List<dynamic>.from(data.map((x) => x.toJson())),
         "url": url == null ? null : url,
         "opcion": opcion == null ? null : opcion,
+        "endpoint": endpoint == null ? null : endpoint,
     };
 }
 
@@ -68,6 +72,7 @@ class Datum {
         this.enabled,
         this.id,
         this.tipo,
+        this.anio,
     });
 
     int idAseguradora;
@@ -76,6 +81,7 @@ class Datum {
     Enabled enabled;
     int id;
     String tipo;
+    int anio;
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         idAseguradora: json["idAseguradora"] == null ? null : json["idAseguradora"],
@@ -84,6 +90,7 @@ class Datum {
         enabled: json["enabled"] == null ? null : enabledValues.map[json["enabled"]],
         id: json["id"] == null ? null : json["id"],
         tipo: json["tipo"] == null ? null : json["tipo"],
+        anio: json["anio"] == null ? null : json["anio"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -93,6 +100,7 @@ class Datum {
         "enabled": enabled == null ? null : enabledValues.reverse[enabled],
         "id": id == null ? null : id,
         "tipo": tipo == null ? null : tipo,
+        "anio": anio == null ? null : anio,
     };
 }
 

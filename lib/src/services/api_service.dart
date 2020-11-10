@@ -2,6 +2,9 @@ import 'dart:typed_data';
 
 import 'package:brokfy_app/src/models/admin_model.dart';
 import 'package:brokfy_app/src/models/auth_api_response.dart';
+import 'package:brokfy_app/src/models/codigo_postal_response.dart';
+import 'package:brokfy_app/src/models/marcas_response.dart';
+import 'package:brokfy_app/src/models/modelos_auto_response.dart';
 import 'package:brokfy_app/src/models/chat_inicial_response.dart' as chatInicial;
 import 'package:brokfy_app/src/models/chat_subir_poliza_response.dart' as chatSubirPoliza;
 import 'package:brokfy_app/src/models/verificar_numero_response.dart';
@@ -555,5 +558,330 @@ class ApiService {
 
   static Future<chatInicial.ChatInicialResponse> contratarPoliza() async {    
     return await iniciarChat(step: "2");
+  }
+
+  static Future<List<chatSubirPoliza.ChatSubirPolizaResponse>> getFormularioContratarPoliza(String tipoPoliza) async {
+    final List<chatSubirPoliza.ChatSubirPolizaResponse> listadoRetorno = new List();
+
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+
+        http.Response response = await http.get(
+          "$url/chat$tipoPoliza", 
+          headers: headers, 
+        );
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          var resp = json.decode(response.body);
+          if( resp["error"] == "invalid_token" ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            http.Response response = await http.get(
+              "$url/chat$tipoPoliza",
+              headers: headers, 
+            );
+            statusCode = response.statusCode;
+          }
+        }
+        
+        if (statusCode < 200 || statusCode > 400 || json == null ) {
+          throw new Exception("Error en el request");
+        }
+
+        if ( statusCode == 400 ) {
+          var resp = json.decode(response.body);
+          print(resp["error_description"]);
+          throw new Exception(resp["error_description"] ?? "Error en el request");
+        }
+        var bodyUtf8 = Utf8Decoder().convert(response.bodyBytes);
+        final decodedData = json.decode(bodyUtf8);
+        if( decodedData == null ) return [];
+
+        decodedData.forEach((item){
+          final tempResponse = chatSubirPoliza.ChatSubirPolizaResponse.fromJson(item);
+          listadoRetorno.add( tempResponse );
+        });
+        
+        return listadoRetorno;
+      }  
+    } catch (e) {
+      print(e.toString());
+    }
+    
+    return null;
+  }
+
+  static Future<List<CodigoPostalResponse>> validarCodigoPostal(String _url, String codigoPostal) async {
+    final List<CodigoPostalResponse> listadoRetorno = new List();
+
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+
+        http.Response response = await http.get(
+          "$url/chat$_url".replaceFirst("{codPostal}", codigoPostal), 
+          headers: headers, 
+        );
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          var resp = json.decode(response.body);
+          if( resp["error"] == "invalid_token" ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            http.Response response = await http.get(
+              "$url/chat$_url".replaceFirst("{codPostal}", codigoPostal), 
+              headers: headers, 
+            );
+            statusCode = response.statusCode;
+          }
+        }
+        
+        if (statusCode < 200 || statusCode > 400 || json == null ) {
+          throw new Exception("Error en el request");
+        }
+
+        if ( statusCode == 400 ) {
+          var resp = json.decode(response.body);
+          print(resp["error_description"]);
+          throw new Exception(resp["error_description"] ?? "Error en el request");
+        }
+        var bodyUtf8 = Utf8Decoder().convert(response.bodyBytes);
+        final decodedData = json.decode(bodyUtf8);
+        if( decodedData == null ) return [];
+
+        decodedData.forEach((item){
+          final tempResponse = CodigoPostalResponse.fromJson(item);
+          listadoRetorno.add( tempResponse );
+        });
+        
+        return listadoRetorno;
+      }  
+    } catch (e) {
+      print(e.toString());
+    }
+    
+    return null;
+  }
+
+  static Future<List<MarcasResponse>> getMarcasXAnio(String _url, String anio) async {
+    final List<MarcasResponse> listadoRetorno = new List();
+
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+
+        http.Response response = await http.get(
+          "$url/chat$_url".replaceFirst("{anio}", anio), 
+          headers: headers, 
+        );
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          var resp = json.decode(response.body);
+          if( resp["error"] == "invalid_token" ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            http.Response response = await http.get(
+              "$url/chat$_url".replaceFirst("{anio}", anio), 
+              headers: headers, 
+            );
+            statusCode = response.statusCode;
+          }
+        }
+        
+        if (statusCode < 200 || statusCode > 400 || json == null ) {
+          throw new Exception("Error en el request");
+        }
+
+        if ( statusCode == 400 ) {
+          var resp = json.decode(response.body);
+          print(resp["error_description"]);
+          throw new Exception(resp["error_description"] ?? "Error en el request");
+        }
+        var bodyUtf8 = Utf8Decoder().convert(response.bodyBytes);
+        final decodedData = json.decode(bodyUtf8);
+        if( decodedData == null ) return [];
+
+        decodedData.forEach((item){
+          final tempResponse = MarcasResponse.fromJson(item);
+          listadoRetorno.add( tempResponse );
+        });
+        
+        return listadoRetorno;
+      }  
+    } catch (e) {
+      print(e.toString());
+    }
+    
+    return null;
+  }
+
+  static Future<List<ModelosAutoResponse>> getModelosAuto(String _url, String anio, String marca) async {
+    final List<ModelosAutoResponse> listadoRetorno = new List();
+
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      if( token != null ) {
+        Map<String, String> headers = {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        };
+
+        http.Response response = await http.get(
+          "$url/chat$_url".replaceFirst("{anio}", anio).replaceFirst("{marca}", marca), 
+          headers: headers, 
+        );
+        int statusCode = response.statusCode;
+
+        if ( statusCode == 401 ) {
+          var resp = json.decode(response.body);
+          if( resp["error"] == "invalid_token" ) {
+            token = await _refreshToken(refreshToken);
+
+            Map<String, String> headers = {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token"
+            };
+
+            http.Response response = await http.get(
+              "$url/chat$_url".replaceFirst("{anio}", anio).replaceFirst("{marca}", marca), 
+              headers: headers, 
+            );
+            statusCode = response.statusCode;
+          }
+        }
+        
+        if (statusCode < 200 || statusCode > 400 || json == null ) {
+          throw new Exception("Error en el request");
+        }
+
+        if ( statusCode == 400 ) {
+          var resp = json.decode(response.body);
+          print(resp["error_description"]);
+          throw new Exception(resp["error_description"] ?? "Error en el request");
+        }
+        var bodyUtf8 = Utf8Decoder().convert(response.bodyBytes);
+        final decodedData = json.decode(bodyUtf8);
+        if( decodedData == null ) return [];
+
+        decodedData.forEach((item){
+          final tempResponse = ModelosAutoResponse.fromJson(item);
+          listadoRetorno.add( tempResponse );
+        });
+        
+        return listadoRetorno;
+      }  
+    } catch (e) {
+      print(e.toString());
+    }
+    
+    return null;
+  }
+
+  static Future<List<ModelosAutoResponse>> submitCotizarPolizaAuto(String _url, Map<String, String> data) async {
+    final List<ModelosAutoResponse> listadoRetorno = new List();
+
+    try {
+      AuthApiResponse auth = await _getAuth();
+      String token = auth.access_token;
+      String refreshToken = auth.refresh_token;
+
+      // if( token != null ) {
+      //   Map<String, String> headers = {
+      //     "Content-Type": "application/json",
+      //     "Authorization": "Bearer $token"
+      //   };
+
+      //   http.Response response = await http.get(
+      //     "$url/chat$_url".replaceFirst("{anio}", anio).replaceFirst("{marca}", marca), 
+      //     headers: headers, 
+      //   );
+      //   int statusCode = response.statusCode;
+
+      //   if ( statusCode == 401 ) {
+      //     var resp = json.decode(response.body);
+      //     if( resp["error"] == "invalid_token" ) {
+      //       token = await _refreshToken(refreshToken);
+
+      //       Map<String, String> headers = {
+      //         "Content-Type": "application/json",
+      //         "Authorization": "Bearer $token"
+      //       };
+
+      //       http.Response response = await http.get(
+      //         "$url/chat$_url".replaceFirst("{anio}", anio).replaceFirst("{marca}", marca), 
+      //         headers: headers, 
+      //       );
+      //       statusCode = response.statusCode;
+      //     }
+      //   }
+        
+      //   if (statusCode < 200 || statusCode > 400 || json == null ) {
+      //     throw new Exception("Error en el request");
+      //   }
+
+      //   if ( statusCode == 400 ) {
+      //     var resp = json.decode(response.body);
+      //     print(resp["error_description"]);
+      //     throw new Exception(resp["error_description"] ?? "Error en el request");
+      //   }
+      //   var bodyUtf8 = Utf8Decoder().convert(response.bodyBytes);
+      //   final decodedData = json.decode(bodyUtf8);
+      //   if( decodedData == null ) return [];
+
+      //   decodedData.forEach((item){
+      //     final tempResponse = ModelosAutoResponse.fromJson(item);
+      //     listadoRetorno.add( tempResponse );
+      //   });
+        
+      //   return listadoRetorno;
+      // }  
+    } catch (e) {
+      print(e.toString());
+    }
+    
+    return null;
   }
 }
