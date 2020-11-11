@@ -46,6 +46,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String imageUrl;
   String groupChatId;
   String _textField = '';
+  bool isDecidingVoice = false;
 
   DateTime _voiceSeconds = DateTime.parse("1999-01-01 00:00:00Z");
   final f = new DateFormat('mm:ss');
@@ -99,18 +100,27 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
-      (Timer timer) => setState(
-        () {
-          _voiceSeconds = _voiceSeconds.add(new Duration(seconds: 1));
-        },
-      ),
+      (Timer timer) => setState(() {
+        _voiceSeconds = _voiceSeconds.add(new Duration(seconds: 1));
+      }),
     );
+  }
+
+  void stopTimer() {
+    _timer.cancel();
   }
 
   final TextEditingController textEditingController = TextEditingController();
   final ScrollController listScrollController = ScrollController();
   final FocusNode focusNode = FocusNode();
   _ChatDetailPageState();
+
+  void cancelVoiceMessage() {
+    setState(() {
+      isRecording = false;
+      isDecidingVoice = false;
+    });
+  }
 
   Future _prepare() async {
     var hasPermission = await FlutterAudioRecorder.hasPermissions;
@@ -130,66 +140,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   void _opt2() async {
-    switch (_recording.status) {
-      case RecordingStatus.Initialized:
-        {
-          await _startRecording();
-          break;
-        }
-      case RecordingStatus.Recording:
-        {
-          await _stopRecording();
-          setState(() {
-            isRecording = false;
-          });
-          break;
-        }
-      case RecordingStatus.Stopped:
-        {
-          await _prepare();
-          break;
-        }
-
-      default:
-        break;
-    }
-
-    // 刷新按钮
+    await _stopRecording();
+    stopTimer();
     setState(() {
-      _buttonIcon = _playerIcon(_recording.status);
+      isDecidingVoice = true;
     });
   }
 
   void _opt(LongPressStartDetails longPressStartDetails) async {
-    switch (_recording.status) {
-      case RecordingStatus.Initialized:
-        {
-          setState(() {
-            isRecording = true;
-            startTimer();
-          });
-          await _startRecording();
-          break;
-        }
-      case RecordingStatus.Recording:
-        {
-          await _stopRecording();
-          break;
-        }
-      case RecordingStatus.Stopped:
-        {
-          await _prepare();
-          break;
-        }
-
-      default:
-        break;
-    }
-
-    // 刷新按钮
     setState(() {
-      _buttonIcon = _playerIcon(_recording.status);
+      isRecording = true;
+      startTimer();
     });
+    await _startRecording();
   }
 
   Widget _playerIcon(RecordingStatus status) {
@@ -354,6 +317,34 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             ),
           );
         });
+  }
+
+  Widget _chatMenuButton() {
+    return GestureDetector(
+      onTap: () {
+        showModal();
+      },
+      child: Container(
+        height: 30,
+        width: 30,
+        child: Icon(
+          Icons.add,
+          color: Color(0xFF0079DE),
+          size: 30,
+        ),
+      ),
+    );
+  }
+
+  Widget _chatCancelVoiceButton() {
+    return GestureDetector(
+        onTap: () {
+          cancelVoiceMessage();
+        },
+        child: Text(
+          "Cancelar",
+          style: TextStyle(color: Color(0xFF0079DE), fontSize: 14),
+        ));
   }
 
   Widget audioButtons() {
@@ -551,11 +542,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               },
             ),
           ),
-          /* audioButtons(),
-          FloatingActionButton(
-            onPressed: _opt,
-            child: _buttonIcon,
-          ), */
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -565,26 +551,28 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               color: Colors.white,
               child: Row(
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      showModal();
-                    },
-                    child: Container(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.add,
-                        color: Color(0xFF0079DE),
-                        size: 30,
-                      ),
-                    ),
-                  ),
+                  isDecidingVoice
+                      ? _chatCancelVoiceButton()
+                      : _chatMenuButton(),
                   Expanded(
                     child: isRecording
-                        ? Text(f.format(_voiceSeconds),
-                            textAlign: TextAlign.center,
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black45))
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.play_arrow),
+                                disabledColor: Colors.grey.withOpacity(0.5),
+                                onPressed: _recording?.status ==
+                                        RecordingStatus.Stopped
+                                    ? _play
+                                    : null,
+                              ),
+                              Text(f.format(_voiceSeconds),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black))
+                            ],
+                          )
                         : TextFormField(
                             controller: textEditingController,
                             textInputAction: TextInputAction.send,
@@ -603,7 +591,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                 border: InputBorder.none),
                           ),
                   ),
-                  _textField != '' ? _sendButton : _voiceButton,
+                  _recording?.status == RecordingStatus.Stopped && isRecording
+                      ? GestureDetector(
+                          onTap: () {
+                            print("enviar");
+                          },
+                          child: Text(
+                            "Listo",
+                            style: TextStyle(
+                                color: Color(0xFF0079DE), fontSize: 14),
+                          ),
+                        )
+                      : _textField != ''
+                          ? _sendButton
+                          : _voiceButton,
                 ],
               ),
             ),
