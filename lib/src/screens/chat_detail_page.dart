@@ -20,6 +20,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:brokfy_app/src/widgets/hex_color.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum MessageType {
   Sender,
@@ -62,6 +65,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String nombre;
   bool isNew;
   String bearer;
+  bool isInitialized;
 
   @override
   void initState() {
@@ -72,6 +76,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
     isLoading = false;
     imageUrl = '';
+    isNew = true;
+    isInitialized = false;
 
     Future.microtask(() {
       _prepare();
@@ -82,16 +88,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     AuthApiResponse userInfo = await DBService.db.getAuthFirst();
     id = userInfo.username;
     peerAvatar = userInfo.nameAws;
-    nombre =
-        '${userInfo.nombre} ${userInfo.apellidoPaterno} ${userInfo.apellidoMaterno}';
+    nombre = '${userInfo.nombre} ${userInfo.apellidoPaterno} ${userInfo.apellidoMaterno}';
     peerId = '';
     isNew = true;
     bearer = userInfo.access_token;
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
+    listScrollController.dispose();
+    textEditingController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -437,6 +446,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF0079DE),
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: HexColor("#F9FAFA"),
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+    ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
+    
     if (this.isNew == null) {
       return Container();
     }
@@ -477,139 +496,141 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ));
 
     groupChatId = "525514199304-525530551711";
-    return Scaffold(
-      appBar: PreferredSize(
-          child: ChatDetailPageAppBar(
-            nombre: this.nombre,
-            img: this.peerAvatar,
-            isNew: this.isNew,
-            bearer: this.bearer,
-          ),
-          preferredSize: Size.fromHeight(100)),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('messages')
-                  .doc(groupChatId)
-                  .collection(groupChatId)
-                  .orderBy('timestamp', descending: true)
-                  .limit(_limit)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(themeColor)));
-                } else {
-                  if (snapshot.data.docs.length == 0) {
-                    //return
-                  } else {
-                    listMessage.addAll(snapshot.data.docs);
-                    return Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Column(
-                          children: [
-                            Text("Tiempo aproximado de espera: 5 minutos",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black45)),
-                            Text(
-                                "Por favor espera unos minutos en lo que te asignamos un asesor.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black45)),
-                            ListView.builder(
-                              itemCount: snapshot.data.size,
-                              shrinkWrap: true,
-                              reverse: true,
-                              padding: EdgeInsets.only(top: 10, bottom: 10),
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return ChatBubble(
-                                  chatMessage: ChatMessage(
-                                    message: snapshot.data.docs[index]
-                                        .data()['content'],
-                                    timestamp: snapshot.data.docs[index]
-                                        .data()['timestamp'],
-                                    type: (id ==
-                                            snapshot.data.docs[index]
-                                                .data()['idFrom'])
-                                        ? MessageType.Sender
-                                        : MessageType.Receiver,
-                                  ),
-                                );
-                              },
-                            )
-                          ],
-                        ));
-                  }
-                }
-              },
+    return SafeArea(
+      child: Scaffold(
+        appBar: PreferredSize(
+            child: ChatDetailPageAppBar(
+              nombre: this.nombre,
+              img: this.peerAvatar,
+              isNew: this.isNew,
+              bearer: this.bearer,
             ),
-          ),
-          /* audioButtons(),
-          FloatingActionButton(
-            onPressed: _opt,
-            child: _buttonIcon,
-          ), */
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 15, right: 15, bottom: 0),
-              height: 60,
-              width: double.infinity,
-              color: Colors.white,
-              child: Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      showModal();
-                    },
-                    child: Container(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Icons.add,
-                        color: Color(0xFF0079DE),
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: isRecording
-                        ? Text(f.format(_voiceSeconds),
-                            textAlign: TextAlign.center,
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black45))
-                        : TextFormField(
-                            controller: textEditingController,
-                            textInputAction: TextInputAction.send,
-                            onFieldSubmitted: (term) {
-                              onSendMessage(term, 1);
-                            },
-                            onChanged: (text) {
-                              setState(() {
-                                _textField = text;
-                              });
-                            },
-                            decoration: InputDecoration(
-                                hintText: "Escribir mensaje",
-                                hintStyle:
-                                    TextStyle(color: Colors.grey.shade500),
-                                border: InputBorder.none),
-                          ),
-                  ),
-                  _textField != '' ? _sendButton : _voiceButton,
-                ],
+            preferredSize: Size.fromHeight(ScreenUtil().setHeight(115))),
+        body: Stack(
+          children: <Widget>[
+            Container(
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('messages')
+                    .doc(groupChatId)
+                    .collection(groupChatId)
+                    .orderBy('timestamp', descending: true)
+                    .limit(_limit)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                        child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(themeColor)));
+                  } else {
+                    if (snapshot.data.docs.length == 0) {
+                      //return
+                    } else {
+                      listMessage.addAll(snapshot.data.docs);
+                      return Padding(
+                          padding: EdgeInsets.only(top: 20),
+                          child: Column(
+                            children: [
+                              Text("Tiempo aproximado de espera: 5 minutos",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black45)),
+                              Text(
+                                  "Por favor espera unos minutos en lo que te asignamos un asesor.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black45)),
+                              ListView.builder(
+                                itemCount: snapshot.data.size,
+                                shrinkWrap: true,
+                                reverse: true,
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return ChatBubble(
+                                    chatMessage: ChatMessage(
+                                      message: snapshot.data.docs[index]
+                                          .data()['content'],
+                                      timestamp: snapshot.data.docs[index]
+                                          .data()['timestamp'],
+                                      type: (id ==
+                                              snapshot.data.docs[index]
+                                                  .data()['idFrom'])
+                                          ? MessageType.Sender
+                                          : MessageType.Receiver,
+                                    ),
+                                  );
+                                },
+                              )
+                            ],
+                          ));
+                    }
+                  }
+                },
               ),
             ),
-          ),
-        ],
-      ),
+            /* audioButtons(),
+            FloatingActionButton(
+              onPressed: _opt,
+              child: _buttonIcon,
+            ), */
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                padding: EdgeInsets.only(left: 15, right: 15, bottom: 0),
+                height: 60,
+                width: double.infinity,
+                color: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        showModal();
+                      },
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        child: Icon(
+                          Icons.add,
+                          color: Color(0xFF0079DE),
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: isRecording
+                          ? Text(f.format(_voiceSeconds),
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black45))
+                          : TextFormField(
+                              controller: textEditingController,
+                              textInputAction: TextInputAction.send,
+                              onFieldSubmitted: (term) {
+                                onSendMessage(term, 1);
+                              },
+                              onChanged: (text) {
+                                setState(() {
+                                  _textField = text;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                  hintText: "Escribir mensaje",
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey.shade500),
+                                  border: InputBorder.none),
+                            ),
+                    ),
+                    _textField != '' ? _sendButton : _voiceButton,
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
     );
   }
 

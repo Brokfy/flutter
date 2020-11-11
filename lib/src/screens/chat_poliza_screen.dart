@@ -195,6 +195,14 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: HexColor("#F9FAFA"),
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: HexColor("#F9FAFA"),
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
     if ( _scrollController.positions.length > 0 ) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
