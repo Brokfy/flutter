@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:async/async.dart';
 
 import 'package:brokfy_app/src/models/auth_api_response.dart';
 import 'package:brokfy_app/src/services/db_service.dart';
@@ -55,7 +56,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final f = new DateFormat('mm:ss');
   bool isRecording = false;
   Timer _timer;
-  int _start = 0;
 
   FlutterAudioRecorder _recorder;
   Recording _recording;
@@ -125,10 +125,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final FocusNode focusNode = FocusNode();
   _ChatDetailPageState();
 
-  void cancelVoiceMessage() {
+  Future<void> cancelVoiceMessage() async {
+    await _prepare();
     setState(() {
       isRecording = false;
       isDecidingVoice = false;
+      _voiceSeconds = DateTime.parse("1999-01-01 00:00:00Z");
     });
   }
 
@@ -151,6 +153,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void _opt2() async {
     await _stopRecording();
+
     stopTimer();
     setState(() {
       isDecidingVoice = true;
