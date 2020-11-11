@@ -20,6 +20,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:brokfy_app/src/widgets/hex_color.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum MessageType {
   Sender,
@@ -63,6 +66,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String nombre;
   bool isNew;
   String bearer;
+  bool isInitialized;
 
   @override
   void initState() {
@@ -73,6 +77,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
     isLoading = false;
     imageUrl = '';
+    isNew = true;
+    isInitialized = false;
 
     Future.microtask(() {
       _prepare();
@@ -88,11 +94,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     peerId = '';
     isNew = true;
     bearer = userInfo.access_token;
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
+    listScrollController.dispose();
+    textEditingController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -428,6 +438,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF0079DE),
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: HexColor("#F9FAFA"),
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+    ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
+
     if (this.isNew == null) {
       return Container();
     }
@@ -468,7 +488,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ));
 
     groupChatId = "525514199304-525530551711";
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: PreferredSize(
           child: ChatDetailPageAppBar(
             nombre: this.nombre,
@@ -476,7 +497,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             isNew: this.isNew,
             bearer: this.bearer,
           ),
-          preferredSize: Size.fromHeight(100)),
+          preferredSize: Size.fromHeight(ScreenUtil().setHeight(115))),
       body: Stack(
         children: <Widget>[
           Container(
@@ -507,12 +528,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             Text("Tiempo aproximado de espera: 5 minutos",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 12, color: Colors.black45)),
+                                    fontFamily: 'SF Pro',
+                                    fontSize: ScreenUtil().setSp(12),
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF979797),
+                                    letterSpacing: ScreenUtil().setSp(0.4))),
                             Text(
                                 "Por favor espera unos minutos en lo que te asignamos un asesor.",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 12, color: Colors.black45)),
+                                    fontFamily: 'SF Pro',
+                                    fontSize: ScreenUtil().setSp(12),
+                                    fontWeight: FontWeight.w200,
+                                    letterSpacing: ScreenUtil().setSp(0.4),
+                                    color: Color(0xFF979797))),
                             ListView.builder(
                               itemCount: snapshot.data.size,
                               shrinkWrap: true,
@@ -611,7 +640,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   void onSendMessage(String content, int type) {
