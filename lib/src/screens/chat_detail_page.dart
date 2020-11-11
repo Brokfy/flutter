@@ -533,15 +533,28 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           padding: EdgeInsets.only(top: 20),
                           child: Column(
                             children: [
-                              Text("Tiempo aproximado de espera: 5 minutos",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black45)),
                               Text(
-                                  "Por favor espera unos minutos en lo que te asignamos un asesor.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black45)),
+                                "Tiempo aproximado de espera: 5 minutos",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'SF Pro',
+                                  fontSize: ScreenUtil().setSp(12), 
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF979797),
+                                  letterSpacing: ScreenUtil().setSp(0.4)
+                                )
+                              ),
+                              Text(
+                                "Por favor espera unos minutos en lo que te asignamos un asesor.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'SF Pro',
+                                  fontSize: ScreenUtil().setSp(12), 
+                                  fontWeight: FontWeight.w200,
+                                  letterSpacing: ScreenUtil().setSp(0.4),
+                                  color: Color(0xFF979797)
+                                )
+                              ),
                               ListView.builder(
                                 itemCount: snapshot.data.size,
                                 shrinkWrap: true,
