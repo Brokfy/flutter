@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:brokfy_app/src/models/auth_api_response.dart';
 import 'package:brokfy_app/src/services/api_service.dart';
 import 'package:brokfy_app/src/services/db_service.dart';
@@ -86,6 +87,7 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
       
       // intenta hacer login
       AuthApiResponse auth = await ApiService.login(telefono, password);
+      auth.password = base64Encode(utf8.encode(password));
       await DBService.db.updateAuth(auth);
 
       // Grabar el acceso en sharedpreferences
@@ -133,12 +135,25 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
   }
 
   _leerHuella() async {
-    if( _isBiometricAvailable ) {
-      bool didAuthenticate = await _localAuth.authenticateWithBiometrics(localizedReason: "Iniciar sesión con huella digital en Brokfy");
-      if( didAuthenticate ) {
-        _pref.isLogged = false;
-        Navigator.pushReplacementNamed(context, "home");
+    try {
+      if( _isBiometricAvailable ) {
+        bool didAuthenticate = await _localAuth.authenticateWithBiometrics(localizedReason: "Iniciar sesión con huella digital en Brokfy");
+        if( didAuthenticate ) {
+          _pref.isLogged = false;
+          AuthApiResponse user = await DBService.db.getAuthFirst();
+          String password = utf8.decode(base64Decode(user.password));
+          
+          // intenta hacer login
+          AuthApiResponse authResponse = await ApiService.login(user.username, password);
+          authResponse.password = user.password;
+          await DBService.db.insertAuth(authResponse);
+          
+          Navigator.pushReplacementNamed(context, "home");
+        }
       }
+    }catch(e) {
+      await DBService.db.deleteAllAuth();
+      Navigator.of(context).pushReplacementNamed('login');
     }
   }
 

@@ -28,6 +28,7 @@ class AuthApiResponse {
         this.apellidoMaterno,
         this.username,
         this.jti,
+        this.password,
     });
 
     // ignore: non_constant_identifier_names
@@ -52,6 +53,7 @@ class AuthApiResponse {
     String apellidoMaterno;
     String username;
     String jti;
+    String password;
 
     factory AuthApiResponse.fromJson(Map<String, dynamic> json) => AuthApiResponse(
         access_token: json["access_token"] == null ? null : json["access_token"],
@@ -72,6 +74,7 @@ class AuthApiResponse {
         apellidoMaterno: json["apellidoMaterno"] == null ? null : json["apellidoMaterno"],
         username: json["username"] == null ? null : json["username"],
         jti: json["jti"] == null ? null : json["jti"],
+        password: json["Password"] == null ? null : json["Password"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -93,5 +96,6 @@ class AuthApiResponse {
         "apellidoMaterno": apellidoMaterno == null ? null : apellidoMaterno,
         "username": username == null ? null : username,
         "jti": jti == null ? null : jti,
+        "Password": password == null ? null: password,
     };
 }

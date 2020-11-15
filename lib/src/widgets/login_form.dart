@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:brokfy_app/src/models/auth_api_response.dart';
 import 'package:brokfy_app/src/services/api_service.dart';
 import 'package:brokfy_app/src/services/db_service.dart';
@@ -104,10 +105,10 @@ class _LoginFormState extends State<LoginForm> {
       _pref.isLogged = true;
 
       // Grabar los datos principales en SqlLite
+      authResponse.password = base64Encode(utf8.encode(password));
       await DBService.db.insertAuth(authResponse);
 
-      AuthApiResponse prueba = await DBService.db.getAuthFirst();
-      print(prueba.username);
+      // AuthApiResponse prueba = await DBService.db.getAuthFirst();
 
       setState(() {
         running = false;

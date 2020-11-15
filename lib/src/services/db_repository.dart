@@ -24,8 +24,8 @@ class DBRepository {
       ];
 
   static const migrations = [
-    // '''
-    // Alter Table Condiciones Add Column activo Integer Default 0;
-    // ''',
+    '''
+    Alter Table Auth Add Column Password Text;
+    ''',
   ];
 }
