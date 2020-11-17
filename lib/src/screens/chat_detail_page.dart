@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:async/async.dart';
+import 'package:flutter/services.dart';
 
 import 'package:brokfy_app/src/models/auth_api_response.dart';
 import 'package:brokfy_app/src/services/db_service.dart';
@@ -21,9 +22,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart';
 import 'package:brokfy_app/src/widgets/hex_color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore.dart';
+import 'package:image_picker/image_picker.dart'; // For Image Picker
+import 'package:path/path.dart' as Path;
 
 enum MessageType {
   Sender,
@@ -626,7 +630,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   _recording?.status == RecordingStatus.Stopped && isRecording
                       ? GestureDetector(
                           onTap: () {
-                            print("enviar");
+                            _uploadFile(_recording?.path, "audio");
                           },
                           child: Text(
                             "Listo",
@@ -663,9 +667,53 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     }
   }
 
+  void onSendVoiceMessage(String path, int type) {
+    listScrollController.animateTo(0.0,
+        duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
+
   /*Este vainoso agrega a la lista de chat o edita e secundayText, segun sea el caso */
   void addtoCloudFirestoListUser(String content) {
     this.isNew ? _agregarAlaLista(content) : _editarLista(content);
+  }
+
+  Future<void> _uploadFile(String path, String fileType) async {
+    String filename = path.split("/").last;
+    Reference storageReference;
+    var file = new File(path);
+    if (fileType == 'image') {
+      storageReference =
+          FirebaseStorage.instance.ref().child("images/$filename");
+    }
+    if (fileType == 'audio') {
+      storageReference =
+          FirebaseStorage.instance.ref().child("audio/$filename");
+    }
+    if (fileType == 'video') {
+      storageReference =
+          FirebaseStorage.instance.ref().child("videos/$filename");
+    }
+    if (fileType == 'pdf') {
+      storageReference = FirebaseStorage.instance.ref().child("pdf/$filename");
+    }
+    if (fileType == 'others') {
+      storageReference =
+          FirebaseStorage.instance.ref().child("others/$filename");
+    }
+    final UploadTask uploadTask =
+        storageReference.putFile(file).catchError((onError) {
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: onError.toString());
+    });
+
+    uploadTask.whenComplete(() => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+                // url archivo
+                Fluttertoast.showToast(msg: downloadUrl.toString())
+              })
+        });
   }
 
   /* Este vainoso, agrega los mensajes de chat */

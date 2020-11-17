@@ -51,7 +51,8 @@ dependencies:
   holding_gesture: any
   flutter_audio_recorder: any
   audioplayers: any
-
+  firebase_storage: ^5.0.1
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
