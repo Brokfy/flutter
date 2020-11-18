@@ -13,24 +13,16 @@ class ChatDetailPageAppBar extends StatelessWidget{
   final String img;
   final String bearer;
   final bool isNew;
+  final AdminModel admin;
 
   ChatDetailPageAppBar(
       {@required this.nombre,
       @required this.img,
       @required this.isNew,
+	    this.admin,
       this.bearer});
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0xFF0079DE),
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: Color(0xFFF9FAFA),
-      systemNavigationBarDividerColor: Colors.grey,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
-    ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
-
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
@@ -268,75 +260,58 @@ class ChatDetailPageAppBar extends StatelessWidget{
         backgroundColor: Color(0xFF0079DE),
         title: Container(
           // padding: EdgeInsets.only(right: 16),
-          child: FutureBuilder(
-            future: ApiService.getAdminChat(this.bearer),
-            builder: (BuildContext context, AsyncSnapshot<AdminModel> snapshot) {
-              if (!snapshot.hasData) {
-                return _animacionSkeleton(context);
-              } else {
-                final admin = Provider.of<AdminChatProvider>(context);
-                admin.id = snapshot.data.id;
-                admin.foto = snapshot.data.image;
-                admin.nombre = snapshot.data.nombre +
-                    ' ' +
-                    snapshot.data.apellidoPaterno +
-                    ' ' +
-                    snapshot.data.apelldioMaterno;
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          child: ( this.admin == null ) ? _animacionSkeleton(context) : Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(4)),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(100), 
-                              child: Text(
-                                admin.nombre,
-                                style: TextStyle(
-                                  fontFamily: 'SF Pro',
-                                  fontSize: ScreenUtil().setSp(17),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white
-                                ),
-                              ),
-                            ),
+                    Container(
+                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(4)),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100), 
+                        child: Text(
+                          admin.nombre,
+                          style: TextStyle(
+                            fontFamily: 'SF Pro',
+                            fontSize: ScreenUtil().setSp(17),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
                           ),
+                        ),
+                      ),
+                    ),
 
-                          Container(
-                            padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(100), 
-                              child: Text(
-                                "Asesor de seguros",
-                                style: TextStyle(
-                                  fontFamily: 'SF Pro',
-                                  fontSize: ScreenUtil().setSp(15),
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white
-                                ),
-                              ),
-                            ),
+                    Container(
+                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100), 
+                        child: Text(
+                          "Asesor de seguros",
+                          style: TextStyle(
+                            fontFamily: 'SF Pro',
+                            fontSize: ScreenUtil().setSp(15),
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
-                );
-              }
-            },
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -359,7 +334,6 @@ class ChatDetailPageAppBar extends StatelessWidget{
             )
           ),
         ],
-
       ),
     );
   }

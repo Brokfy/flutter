@@ -17,6 +17,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../services/api_service.dart';
+import '../models/admin_model.dart';
 
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -24,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:brokfy_app/src/widgets/hex_color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 enum MessageType {
   Sender,
@@ -490,160 +493,255 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ));
 
-    groupChatId = "525514199304-525530551711";
-    return SafeArea(
-        child: Scaffold(
-      appBar: PreferredSize(
-          child: ChatDetailPageAppBar(
-            nombre: this.nombre,
-            img: this.peerAvatar,
-            isNew: this.isNew,
-            bearer: this.bearer,
-          ),
-          preferredSize: Size.fromHeight(ScreenUtil().setHeight(115))),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('messages')
-                  .doc(groupChatId)
-                  .collection(groupChatId)
-                  .orderBy('timestamp', descending: true)
-                  .limit(_limit)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(themeColor)));
-                } else {
-                  if (snapshot.data.docs.length == 0) {
-                    //return
-                  } else {
-                    listMessage.addAll(snapshot.data.docs);
-                    return Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Column(
-                          children: [
-                            Text("Tiempo aproximado de espera: 5 minutos",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: 'SF Pro',
-                                    fontSize: ScreenUtil().setSp(12),
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF979797),
-                                    letterSpacing: ScreenUtil().setSp(0.4))),
-                            Text(
-                                "Por favor espera unos minutos en lo que te asignamos un asesor.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: 'SF Pro',
-                                    fontSize: ScreenUtil().setSp(12),
-                                    fontWeight: FontWeight.w200,
-                                    letterSpacing: ScreenUtil().setSp(0.4),
-                                    color: Color(0xFF979797))),
-                            ListView.builder(
-                              itemCount: snapshot.data.size,
-                              shrinkWrap: true,
-                              reverse: true,
-                              padding: EdgeInsets.only(top: 10, bottom: 10),
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return ChatBubble(
-                                  chatMessage: ChatMessage(
-                                    message: snapshot.data.docs[index]
-                                        .data()['content'],
-                                    timestamp: snapshot.data.docs[index]
-                                        .data()['timestamp'],
-                                    type: (id ==
-                                            snapshot.data.docs[index]
-                                                .data()['idFrom'])
-                                        ? MessageType.Sender
-                                        : MessageType.Receiver,
-                                  ),
-                                );
-                              },
-                            )
-                          ],
-                        ));
-                  }
-                }
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 15, right: 15, bottom: 0),
-              height: 60,
-              width: double.infinity,
-              color: Colors.white,
-              child: Row(
-                children: <Widget>[
-                  isDecidingVoice
-                      ? _chatCancelVoiceButton()
-                      : _chatMenuButton(),
-                  Expanded(
-                    child: isRecording
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.play_arrow),
-                                disabledColor: Colors.grey.withOpacity(0.5),
-                                onPressed: _recording?.status ==
-                                        RecordingStatus.Stopped
-                                    ? _play
-                                    : null,
-                              ),
-                              Text(f.format(_voiceSeconds),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.black))
-                            ],
-                          )
-                        : TextFormField(
-                            controller: textEditingController,
-                            textInputAction: TextInputAction.send,
-                            onFieldSubmitted: (term) {
-                              onSendMessage(term, 1);
-                            },
-                            onChanged: (text) {
-                              setState(() {
-                                _textField = text;
-                              });
-                            },
-                            decoration: InputDecoration(
-                                hintText: "Escribir mensaje",
-                                hintStyle:
-                                    TextStyle(color: Colors.grey.shade500),
-                                border: InputBorder.none),
-                          ),
-                  ),
-                  _recording?.status == RecordingStatus.Stopped && isRecording
-                      ? GestureDetector(
-                          onTap: () {
-                            print("enviar");
-                          },
-                          child: Text(
-                            "Listo",
-                            style: TextStyle(
-                                color: Color(0xFF0079DE), fontSize: 14),
-                          ),
-                        )
-                      : _textField != ''
-                          ? _sendButton
-                          : _voiceButton,
-                ],
+    groupChatId = "525514199304-525530551711";    
+    return FutureBuilder(
+      future: ApiService.getAdminChat(this.bearer),
+      builder: (BuildContext context, AsyncSnapshot<AdminModel> snapshot) {
+        if (!snapshot.hasData) {
+          return SafeArea(
+            child: Scaffold(
+              appBar: PreferredSize(
+                child: ChatDetailPageAppBar(
+                  nombre: this.nombre,
+                  img: this.peerAvatar,
+                  isNew: this.isNew,
+                  bearer: this.bearer,
+                ),
+                preferredSize: Size.fromHeight(ScreenUtil().setHeight(115))
               ),
-            ),
+              body: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                )
+              )
+            )
+          );
+        } else {
+          final admin = AdminModel();
+          admin.id = snapshot.data.id;
+          admin.image = snapshot.data.image;
+          admin.nombre = snapshot.data.nombre +
+              ' ' +
+              snapshot.data.apellidoPaterno +
+              ' ' +
+              snapshot.data.apelldioMaterno;
+
+          return SafeArea(
+            child: Scaffold(
+              appBar: PreferredSize(
+                child: ChatDetailPageAppBar(
+                  nombre: this.nombre,
+                  img: this.peerAvatar,
+                  isNew: this.isNew,
+                  bearer: this.bearer,
+                  admin: admin
+                ),
+                preferredSize: Size.fromHeight(ScreenUtil().setHeight(115))
+              ),
+              body: Stack(
+                children: <Widget>[
+                  Container(
+                    child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('messages')
+                          .doc(groupChatId)
+                          .collection(groupChatId)
+                          .orderBy('timestamp', descending: true)
+                          .limit(_limit)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                              child: CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(themeColor)));
+                        } else {
+                          if (snapshot.data.docs.length == 0) {
+                            //return
+                          } else {
+                            listMessage.addAll(snapshot.data.docs);
+                            return Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child: Column(
+                                  children: [
+                                    Text("Tiempo aproximado de espera: 5 minutos",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontFamily: 'SF Pro',
+                                            fontSize: ScreenUtil().setSp(12),
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF979797),
+                                            letterSpacing: ScreenUtil().setSp(0.4))),
+                                    Text(
+                                        "Por favor espera unos minutos en lo que te asignamos un asesor.",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontFamily: 'SF Pro',
+                                            fontSize: ScreenUtil().setSp(12),
+                                            fontWeight: FontWeight.w200,
+                                            letterSpacing: ScreenUtil().setSp(0.4),
+                                            color: Color(0xFF979797))),
+                                    ListView.builder(
+                                      itemCount: snapshot.data.size,
+                                      shrinkWrap: true,
+                                      reverse: true,
+                                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return ChatBubble(
+                                          chatMessage: ChatMessage(
+                                            message: snapshot.data.docs[index]
+                                                .data()['content'],
+                                            timestamp: snapshot.data.docs[index]
+                                                .data()['timestamp'],
+                                            type: (id ==
+                                                    snapshot.data.docs[index]
+                                                        .data()['idFrom'])
+                                                ? MessageType.Sender
+                                                : MessageType.Receiver,
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  ],
+                                ));
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 15, right: 15, bottom: 0),
+                      height: 60,
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: Row(
+                        children: <Widget>[
+                          isDecidingVoice
+                              ? _chatCancelVoiceButton()
+                              : _chatMenuButton(),
+                          Expanded(
+                            child: isRecording
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.play_arrow),
+                                        disabledColor: Colors.grey.withOpacity(0.5),
+                                        onPressed: _recording?.status ==
+                                                RecordingStatus.Stopped
+                                            ? _play
+                                            : null,
+                                      ),
+                                      Text(f.format(_voiceSeconds),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 18, color: Colors.black))
+                                    ],
+                                  )
+                                : TextFormField(
+                                    controller: textEditingController,
+                                    textInputAction: TextInputAction.send,
+                                    onFieldSubmitted: (term) {
+                                      onSendMessage(term, 1);
+                                    },
+                                    onChanged: (text) {
+                                      setState(() {
+                                        _textField = text;
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                        hintText: "Escribir mensaje",
+                                        hintStyle:
+                                            TextStyle(color: Colors.grey.shade500),
+                                        border: InputBorder.none),
+                                  ),
+                          ),
+                          _recording?.status == RecordingStatus.Stopped && isRecording
+                              ? GestureDetector(
+                                  onTap: () {
+                                    print("enviar");
+                                  },
+                                  child: Text(
+                                    "Listo",
+                                    style: TextStyle(
+                                        color: Color(0xFF0079DE), fontSize: 14),
+                                  ),
+                                )
+                              : _textField != ''
+                                  ? _sendButton
+                                  : _voiceButton,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            )
+          );
+        }
+      },
+    );
+  }
+
+  Widget _animacionSkeleton(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(left: ScreenUtil().setWidth(15), bottom: ScreenUtil().setHeight(8)),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100), 
+                  child: SkeletonAnimation(
+                    child: Container(
+                      height: ScreenUtil().setHeight(30),
+                      width: ScreenUtil().setWidth(180),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.grey[300]),
+                    ),
+                  ),
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.only(left: ScreenUtil().setWidth(15), bottom: ScreenUtil().setHeight(8)),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100), 
+                  child: SkeletonAnimation(
+                    child: Container(
+                      height: ScreenUtil().setHeight(25),
+                      width: ScreenUtil().setWidth(120),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: Colors.grey[300]
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ));
+        ),
+      ],
+    );
   }
 
   void onSendMessage(String content, int type) {
