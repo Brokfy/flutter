@@ -630,7 +630,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   _recording?.status == RecordingStatus.Stopped && isRecording
                       ? GestureDetector(
                           onTap: () {
-                            _uploadFile(_recording?.path, "audio");
+                            // _uploadFile(_recording?.path, "audio");
                           },
                           child: Text(
                             "Listo",
@@ -677,7 +677,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     this.isNew ? _agregarAlaLista(content) : _editarLista(content);
   }
 
-  Future<void> _uploadFile(String path, String fileType) async {
+  /*  Future<void> _uploadFile(String path, String fileType) async {
     String filename = path.split("/").last;
     Reference storageReference;
     var file = new File(path);
@@ -715,7 +715,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               })
         });
   }
-
+ */
   /* Este vainoso, agrega los mensajes de chat */
   void addToCloudFirestore(String content, int type) {
     var documentReference = FirebaseFirestore.instance
