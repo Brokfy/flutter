@@ -9,18 +9,30 @@ class ModelosAutoResponse {
     ModelosAutoResponse({
         this.id,
         this.nombre,
+        this.codModelo,
+        this.nomModelo,
     });
 
     String id;
     String nombre;
+    String codModelo;
+    String nomModelo;
 
     factory ModelosAutoResponse.fromJson(Map<String, dynamic> json) => ModelosAutoResponse(
-        id: json["id"],
-        nombre: json["nombre"],
+        id: json["codModelo"].toString() != null ? json["codModelo"].toString()
+          : json["id"] != null ? json["id"].toString()
+          : null,
+        nombre: json["nomModelo"] != null ? json["nomModelo"]
+          : json["nombre"] != null ? json["nombre"] 
+          : null,
     );
 
     Map<String, dynamic> toJson() => {
-        "id": id,
-        "nombre": nombre,
+        "id": codModelo != null ? codModelo
+          : id != null ? id 
+          : null,
+        "nombre": nomModelo != null ? nomModelo
+          : nombre != null ? nombre 
+          : null,
     };
 }
