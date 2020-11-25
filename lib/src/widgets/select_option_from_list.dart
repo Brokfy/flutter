@@ -235,6 +235,8 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
       'nombre': json["nombre"],
       'opcion': json["opcion"],
       'tipo': json["tipo"],
+      'colonia': json["colonia"],
+      "etiqueta": json["etiqueta"],
     };
   }
 

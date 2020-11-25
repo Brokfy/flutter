@@ -42,9 +42,12 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
   bool writting;
   TextEditingController _nroPolizaController;
   TextEditingController _codigoPostalController;
+  TextEditingController _calleController;
+  TextEditingController _numeroDomicilioController;
   FixedExtentScrollController _fixedExtentScrollController;
   List<MarcasResponse> marcas = [];
   List<ModelosAutoResponse> modelos = [];
+  List<CodigoPostalResponse> colonias = [];
 
   Map<String, dynamic> agregarPolizaData = {
     "aseguradora": null,
@@ -64,6 +67,14 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
     "marca": null,
     "modelo": null,
     "formaPago": null,
+    "colonia": null,
+    "calle": null,
+    "numeroDomicilio": null,
+    "tipoVivienda": null,
+    "tipoTecho": null,
+    "tipoMuro": null,
+    "pisoDepto": null,
+    "menos500Mts": null,
   };
 
   @override
@@ -76,6 +87,8 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
     _nroPolizaController = TextEditingController();
     _codigoPostalController = TextEditingController();
     _fixedExtentScrollController =  FixedExtentScrollController();
+    _calleController = TextEditingController();
+    _numeroDomicilioController = TextEditingController();
 
     Firebase.initializeApp().whenComplete(() {
       print("completed");
@@ -90,6 +103,8 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
     _scrollController.dispose();
     _codigoPostalController.dispose();
     _fixedExtentScrollController.dispose();
+    _calleController.dispose();
+    _numeroDomicilioController.dispose();
   }
 
   @override
@@ -263,9 +278,877 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
           dataEntryType == "marca" ? _seleccionContratarMarcaBuild() : 
           dataEntryType == "modelo" ? _seleccionContratarModeloBuild() : 
           dataEntryType == "pago" ? _seleccionContratarPagoBuild() : 
+          dataEntryType == "colonia" ? _seleccionContratarColoniaBuild() : 
+          dataEntryType == "calle" ? _seleccionContratarCalleBuild() : 
+          dataEntryType == "numeroDomicilio" ? _seleccionContratarNumeroDomicilioBuild() : 
+          dataEntryType == "tipoVivienda" ? _seleccionContratarTipoViviendaBuild() : 
+          dataEntryType == "tipoTecho" ? _seleccionContratarTipoTechoBuild() : 
+          dataEntryType == "tipoMuro" ? _seleccionContratarTipoMuroBuild() : 
+          dataEntryType == "pisoDepto" ? _seleccionContratarPisoDeptoBuild() : 
+          dataEntryType == "menos500Mts" ? _seleccionContratarMenos500MtsBuild() : 
           [],
       ),
     );
+  }
+
+  List<Widget> _seleccionContratarMenos500MtsBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Text(
+          'Selecciona una opción:',
+          style: TextStyle(
+            fontFamily: 'SF Pro',
+            fontSize: ScreenUtil().setSp(14),
+            color: Color(0xFF535353)
+          ),
+        ),
+      ),  
+      ..._continuacionChat[indexPregunta].opciones.map((e) => Container(
+          height: ScreenUtil().setHeight(60),
+          margin: EdgeInsets.only(
+            left: ScreenUtil().setWidth(50),
+            right: ScreenUtil().setWidth(50),
+            bottom: ScreenUtil().setHeight(30),
+          ),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: HexColor("#0079DE").withOpacity(0.5),
+                spreadRadius: 0,
+                blurRadius: ScreenUtil().setHeight(9),
+                offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+              ),
+            ],
+          ),
+          child: RaisedButton(
+            onPressed: () async { 
+              _chat.add({
+                "mensaje": e.opcion,
+                "autor": "Usuario"
+              });
+              contratarPolizaData["menos500Mts"] = e.opcion;
+              showDataEntry = false;
+              indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+              setState(() {});
+
+              for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                writting = true;
+                setState(() {});
+                await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                writting = false;
+                setState(() {});
+                await Future.delayed(Duration(milliseconds: 200));
+
+                _chat.add({
+                  "mensaje": pregunta.pregunta,
+                  "autor": "Brokfy"
+                });  
+              }
+              showDataEntry = true;
+              dataEntryType = "tipoPoliza";
+
+              await Future.delayed(Duration(milliseconds: 200));
+              _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+              setState(() {});
+            },
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+            disabledColor: HexColor("#C4C4C4"),
+            textColor: Colors.white,
+            disabledTextColor: Colors.white,
+            padding: EdgeInsets.all(0.0),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: HexColor("#C4C4C4"),
+                gradient: LinearGradient(
+                  colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(5.0)
+              ),
+              child: Container(
+                // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+                alignment: Alignment.center,
+                child: Text(
+                  e.opcion,
+                  style: TextStyle(
+                    color: HexColor("#FFFFFF"),
+                    fontWeight: FontWeight.bold,
+                    fontSize: ScreenUtil().setSp(15),
+                    fontFamily: 'SF Pro', 
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarPisoDeptoBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<chatSubirPoliza.Datum>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            _continuacionChat[indexPregunta].opciones[0].data,
+                            [],
+                            title: "Piso del departamento",
+                            field: "etiqueta",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["pisoDepto"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["pisoDepto"] != null ? contratarPolizaData["pisoDepto"].etiqueta : 'Seleccione el piso del departamento',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["pisoDepto"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["pisoDepto"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["pisoDepto"].etiqueta,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "menos500Mts";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarTipoMuroBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<chatSubirPoliza.Datum>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            _continuacionChat[indexPregunta].opciones[0].data,
+                            [],
+                            title: "Tipo de muro",
+                            field: "etiqueta",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["tipoMuro"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["tipoMuro"] != null ? contratarPolizaData["tipoMuro"].etiqueta : 'Seleccione el tipo de muro',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["tipoMuro"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["tipoMuro"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["tipoMuro"].etiqueta,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "pisoDepto";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarTipoTechoBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<chatSubirPoliza.Datum>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            _continuacionChat[indexPregunta].opciones[0].data,
+                            [],
+                            title: "Tipo de techo",
+                            field: "etiqueta",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["tipoTecho"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["tipoTecho"] != null ? contratarPolizaData["tipoTecho"].etiqueta : 'Seleccione el tipo de techo',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["tipoTecho"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["tipoTecho"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["tipoTecho"].etiqueta,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "tipoMuro";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarTipoViviendaBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<chatSubirPoliza.Datum>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            _continuacionChat[indexPregunta].opciones[0].data,
+                            [],
+                            title: "Tipo de vivienda",
+                            field: "etiqueta",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["tipoVivienda"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["tipoVivienda"] != null ? contratarPolizaData["tipoVivienda"].etiqueta : 'Seleccione el tipo de vivienda',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["tipoVivienda"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["tipoVivienda"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["tipoVivienda"].etiqueta,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "tipoTecho";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarNumeroDomicilioBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              margin: EdgeInsets.all(0),
+              // padding: EdgeInsets.all(0),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"), 
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: TextFormField(
+                controller: _numeroDomicilioController,
+                cursorColor: Colors.black,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  fontSize: ScreenUtil().setSp(16),
+                  fontWeight: FontWeight.w400
+                ),
+                decoration: new InputDecoration.collapsed(
+                  border: InputBorder.none,
+                  hintText: "Número exterior"
+                ).copyWith(
+                  hintStyle: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: Color(0xFFB3B3B3)
+                  ),
+                  labelStyle: TextStyle(
+                    fontFamily: 'SF Pro',
+                    color: Color(0xFFB3B3B3)
+                  ),
+                  counterText: "",
+                ),
+              )
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( _numeroDomicilioController.text == null || _numeroDomicilioController.text.trim().length == 0 ) return;
+                        contratarPolizaData["numeroDomicilio"] = _numeroDomicilioController.text;
+                        _numeroDomicilioController.text = "";
+                        
+                        _chat.add({
+                          "mensaje": contratarPolizaData["numeroDomicilio"],
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 80));
+                          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 80));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "tipoVivienda";
+                        
+                        setState(() {});
+                        await Future.delayed(Duration(milliseconds: 80));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+
+  List<Widget> _seleccionContratarCalleBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              margin: EdgeInsets.all(0),
+              // padding: EdgeInsets.all(0),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"), 
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: TextFormField(
+                controller: _calleController,
+                cursorColor: Colors.black,
+                keyboardType: TextInputType.text,
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  fontSize: ScreenUtil().setSp(16),
+                  fontWeight: FontWeight.w400
+                ),
+                decoration: new InputDecoration.collapsed(
+                  border: InputBorder.none,
+                  hintText: "Calle"
+                ).copyWith(
+                  hintStyle: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: Color(0xFFB3B3B3)
+                  ),
+                  labelStyle: TextStyle(
+                    fontFamily: 'SF Pro',
+                    color: Color(0xFFB3B3B3)
+                  ),
+                  counterText: "",
+                ),
+              )
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( _calleController.text == null || _calleController.text.trim().length == 0 ) return;
+                        contratarPolizaData["calle"] = _calleController.text;
+                        _calleController.text = "";
+                        
+                        _chat.add({
+                          "mensaje": contratarPolizaData["calle"],
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 80));
+                          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 80));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "numeroDomicilio";
+                        
+                        setState(() {});
+                        await Future.delayed(Duration(milliseconds: 80));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+      
+    ];
+  }
+
+  List<Widget> _seleccionContratarColoniaBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<CodigoPostalResponse>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            colonias,
+                            [],
+                            title: "Colonias",
+                            field: "colonia",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["colonia"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["colonia"] != null ? contratarPolizaData["colonia"].colonia : 'Selecciona la colonia',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["colonia"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["colonia"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["colonia"].colonia,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "calle";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+      
+    ];
   }
 
   List<Widget> _seleccionContratarPagoBuild() {
@@ -841,6 +1724,9 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                           "autor": "Usuario"
                         });
                         showDataEntry = false;
+                        setState(() {});
+                        await Future.delayed(Duration(milliseconds: 80));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
 
                         String endpoint = _continuacionChat[indexPregunta].opciones[0].endpoint;
                         List<CodigoPostalResponse> response =  await ApiService.validarCodigoPostal(endpoint, contratarPolizaData["codigoPostal"]);
@@ -897,7 +1783,13 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                           });  
                         }
                         showDataEntry = true;
-                        dataEntryType = "anoModelo";
+                        if( contratarPolizaData["tipoPoliza"].opcion == "Auto" || contratarPolizaData["tipoPoliza"].opcion == "Moto" ) {
+                          dataEntryType = "anoModelo";
+                        } else if( contratarPolizaData["tipoPoliza"].opcion == "Hogar" ) {
+                          dataEntryType = "colonia";
+                          colonias = response;
+                        }
+                        
                         setState(() {});
                         await Future.delayed(Duration(milliseconds: 80));
                         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);

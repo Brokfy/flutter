@@ -73,6 +73,11 @@ class Datum {
         this.id,
         this.tipo,
         this.anio,
+        this.etiqueta,
+        this.idAfirme,
+        this.idChubb,
+        this.valorAfirme,
+        this.validadorAfirme,
     });
 
     int idAseguradora;
@@ -82,6 +87,11 @@ class Datum {
     int id;
     String tipo;
     int anio;
+    String etiqueta;
+    String idAfirme;
+    String idChubb;
+    String valorAfirme;
+    String validadorAfirme;
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         idAseguradora: json["idAseguradora"] == null ? null : json["idAseguradora"],
@@ -91,6 +101,11 @@ class Datum {
         id: json["id"] == null ? null : json["id"],
         tipo: json["tipo"] == null ? null : json["tipo"],
         anio: json["anio"] == null ? null : json["anio"],
+        etiqueta: json["etiqueta"] == null ? null : json["etiqueta"],
+        idAfirme: json["idAfirme"] == null ? null : json["idAfirme"],
+        idChubb: json["idChubb"] == null ? null : json["idChubb"],
+        valorAfirme: json["valorAfirme"] == null ? null : json["valorAfirme"],
+        validadorAfirme: json["validadorAfirme"] == null ? null : json["validadorAfirme"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -101,6 +116,11 @@ class Datum {
         "id": id == null ? null : id,
         "tipo": tipo == null ? null : tipo,
         "anio": anio == null ? null : anio,
+        "etiqueta": etiqueta == null ? null : etiqueta,
+        "idAfirme": idAfirme == null ? null : idAfirme,
+        "idChubb": idChubb == null ? null : idChubb,
+        "valorAfirme": valorAfirme == null ? null : valorAfirme,
+        "validadorAfirme": validadorAfirme == null ? null : validadorAfirme,
     };
 }
 
