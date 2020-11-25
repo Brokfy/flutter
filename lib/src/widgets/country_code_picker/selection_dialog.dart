@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'country_code.dart';
-
 
 /// selection dialog used for selection of the country code
 class SelectionDialog extends StatefulWidget {
@@ -59,10 +57,12 @@ class _SelectionDialogState extends State<SelectionDialog> {
                   Container(
                     width: 60,
                     child: IconButton(
-                      iconSize: 20,
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Image.asset('assets/images/Back.png', filterQuality: FilterQuality.high,)
-                    ),
+                        iconSize: 20,
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Image.asset(
+                          'assets/images/Back.png',
+                          filterQuality: FilterQuality.high,
+                        )),
                   ),
                   Expanded(
                     child: Container(
@@ -78,13 +78,15 @@ class _SelectionDialogState extends State<SelectionDialog> {
                       ),
                     ),
                   ),
-                  Container(width: 60,),
+                  Container(
+                    width: 60,
+                  ),
                 ],
               ),
             ),
-
-            Divider(height: 8,),
-
+            Divider(
+              height: 8,
+            ),
             if (!widget.hideSearch)
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -94,27 +96,27 @@ class _SelectionDialogState extends State<SelectionDialog> {
               //     onChanged: _filterElements,
               //   ),
               // ),
-              
+
               Container(
                 height: 40,
                 // color: Colors.red,
                 child: TextField(
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 30),
-                      // hintText: 'Subject',
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.only(left: 28.0, right: 10),
-                        child: Icon(Icons.search),
-                      )
-                  ),
-                  style: widget.searchStyle,
-                  onChanged: _filterElements
-                ),
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+                        // hintText: 'Subject',
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(left: 28.0, right: 10),
+                          child: Icon(Icons.search),
+                        )),
+                    style: widget.searchStyle,
+                    onChanged: _filterElements),
               ),
-
-            Divider(height: 8,),
+            Divider(
+              height: 8,
+            ),
           ],
         ),
         children: [
@@ -124,42 +126,39 @@ class _SelectionDialogState extends State<SelectionDialog> {
             height:
                 widget.size?.height ?? MediaQuery.of(context).size.height * 0.7,
             child: ListView(
-              children: 
-              ListTile.divideTiles(
-                context: context,
-                tiles: 
-                [
-                  // widget.favoriteElements.isEmpty
-                  //     ? const DecoratedBox(decoration: BoxDecoration())
-                  //     : Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.start,
-                  //         children: [
-                  //           ...widget.favoriteElements.map(
-                  //             (f) => SimpleDialogOption(
-                  //               child: _buildOption(f),
-                  //               onPressed: () {
-                  //                 _selectItem(f);
-                  //               },
-                  //             ),
-                  //           ),
-                  //           const Divider(),
-                  //         ],
-                  //       ),
-                  if (filteredElements.isEmpty)
-                    _buildEmptySearchWidget(context)
-                  else
-                    ...filteredElements.map(
-                      (e) => SimpleDialogOption(
-                        key: Key(e.toLongString()),
-                        child: _buildOption(e),
-                        onPressed: () {
-                          _selectItem(e);
-                        },
-                      ),
+                children: ListTile.divideTiles(
+              context: context,
+              tiles: [
+                // widget.favoriteElements.isEmpty
+                //     ? const DecoratedBox(decoration: BoxDecoration())
+                //     : Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: [
+                //           ...widget.favoriteElements.map(
+                //             (f) => SimpleDialogOption(
+                //               child: _buildOption(f),
+                //               onPressed: () {
+                //                 _selectItem(f);
+                //               },
+                //             ),
+                //           ),
+                //           const Divider(),
+                //         ],
+                //       ),
+                if (filteredElements.isEmpty)
+                  _buildEmptySearchWidget(context)
+                else
+                  ...filteredElements.map(
+                    (e) => SimpleDialogOption(
+                      key: Key(e.toLongString()),
+                      child: _buildOption(e),
+                      onPressed: () {
+                        _selectItem(e);
+                      },
                     ),
-                ],
-              ).toList()
-            ),
+                  ),
+              ],
+            ).toList()),
           ),
         ],
       );
@@ -212,24 +211,26 @@ class _SelectionDialogState extends State<SelectionDialog> {
   }
 
   void _filterElements(String s) {
-    s = s.toUpperCase()
-      .replaceAll("É", "E")
-      .replaceAll("Í", "I")
-      .replaceAll("Á", "A")
-      .replaceAll("Ó", "O")
-      .replaceAll("Ú", "U");
+    s = s
+        .toUpperCase()
+        .replaceAll("É", "E")
+        .replaceAll("Í", "I")
+        .replaceAll("Á", "A")
+        .replaceAll("Ó", "O")
+        .replaceAll("Ú", "U");
     setState(() {
       filteredElements = widget.elements
           .where((e) =>
               e.code.contains(s) ||
               e.dialCode.contains(s) ||
-              e.name.toUpperCase()
-                .replaceAll("É", "E")
-                .replaceAll("Í", "I")
-                .replaceAll("Á", "A")
-                .replaceAll("Ó", "O")
-                .replaceAll("Ú", "U")
-                .contains(s))
+              e.name
+                  .toUpperCase()
+                  .replaceAll("É", "E")
+                  .replaceAll("Í", "I")
+                  .replaceAll("Á", "A")
+                  .replaceAll("Ó", "O")
+                  .replaceAll("Ú", "U")
+                  .contains(s))
           .toList();
     });
   }

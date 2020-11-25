@@ -3,6 +3,7 @@ import '../../screens/chat_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../services/audio_service.dart';
 
 // ignore: must_be_immutable
 class ChatBubble extends StatefulWidget {
@@ -13,6 +14,26 @@ class ChatBubble extends StatefulWidget {
 }
 
 class _ChatBubbleState extends State<ChatBubble> {
+  Widget message() {
+    switch (widget.chatMessage.messageType) {
+      case 1:
+        //text
+        return Text(widget.chatMessage.message,
+            style: TextStyle(
+                color: (widget.chatMessage.type == MessageType.Receiver
+                    ? Colors.black
+                    : Colors.white)));
+      case 2:
+        //image
+        return Image.network(widget.chatMessage.message);
+      case 4:
+        //audio
+        return PlayerWidget(url: widget.chatMessage.message);
+      default:
+        return Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String _dueDate2 = new DateFormat('HH:mm a').format(
@@ -29,20 +50,15 @@ class _ChatBubbleState extends State<ChatBubble> {
                 ? Alignment.topLeft
                 : Alignment.topRight),
             child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: (widget.chatMessage.type == MessageType.Receiver
-                    ? Colors.grey.shade200
-                    : Color(0xFF0079DE)),
-              ),
-              padding:
-                  EdgeInsets.only(top: 12, bottom: 12, right: 10.0, left: 25.0),
-              child: Text(widget.chatMessage.message,
-                  style: TextStyle(
-                      color: (widget.chatMessage.type == MessageType.Receiver
-                          ? Colors.black
-                          : Colors.white))),
-            ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: (widget.chatMessage.type == MessageType.Receiver
+                      ? Colors.grey.shade200
+                      : Color(0xFF0079DE)),
+                ),
+                padding: EdgeInsets.only(
+                    top: 12, bottom: 12, right: 10.0, left: 25.0),
+                child: message()),
           ),
         ),
         Padding(

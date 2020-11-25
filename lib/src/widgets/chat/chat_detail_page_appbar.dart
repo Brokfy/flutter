@@ -8,7 +8,7 @@ import 'package:skeleton_text/skeleton_text.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ChatDetailPageAppBar extends StatelessWidget{
+class ChatDetailPageAppBar extends StatelessWidget {
   final String nombre;
   final String img;
   final String bearer;
@@ -19,19 +19,18 @@ class ChatDetailPageAppBar extends StatelessWidget{
       {@required this.nombre,
       @required this.img,
       @required this.isNew,
-	    this.admin,
+      this.admin,
       this.bearer});
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      backgroundColor: Color(0xFF0178DE),
-      flexibleSpace: this.isNew 
-        ? _appBarChatNuevo(context)
-        // : _appBarChatAntiguo(context),
-        : Container(),
-    );
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xFF0178DE),
+        flexibleSpace: _appBarChatNuevo(context)
+        /*this.isNew ? _appBarChatNuevo(context) //: _appBarChatAntiguo(context),
+          : Container(), */
+        );
   }
 
   Widget _appBarChatAntiguo(BuildContext context) {
@@ -43,20 +42,22 @@ class ChatDetailPageAppBar extends StatelessWidget{
             left: ScreenUtil().setWidth(10),
           ),
           child: IconButton(
-            onPressed: () {
-              SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-                statusBarColor: Color(0xFFF9FAFA),
-                statusBarIconBrightness: Brightness.dark,
-                statusBarBrightness: Brightness.light,
-                systemNavigationBarColor: Color(0xFFF9FAFA),
-                systemNavigationBarDividerColor: Colors.grey,
-                systemNavigationBarIconBrightness: Brightness.dark,
-              ));
-              Navigator.pop(context);
-            },
-            padding: EdgeInsets.all(0.0),
-            icon: Image.asset('assets/images/icons/Chat_Back@3x.png', filterQuality: FilterQuality.high,)
-          ),
+              onPressed: () {
+                SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+                  statusBarColor: Color(0xFFF9FAFA),
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
+                  systemNavigationBarColor: Color(0xFFF9FAFA),
+                  systemNavigationBarDividerColor: Colors.grey,
+                  systemNavigationBarIconBrightness: Brightness.dark,
+                ));
+                Navigator.pop(context);
+              },
+              padding: EdgeInsets.all(0.0),
+              icon: Image.asset(
+                'assets/images/icons/Chat_Back@3x.png',
+                filterQuality: FilterQuality.high,
+              )),
         ),
         iconTheme: IconThemeData(
           color: Color(0xFF202D39),
@@ -76,39 +77,34 @@ class ChatDetailPageAppBar extends StatelessWidget{
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(4)),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle
-                      ),
+                      padding:
+                          EdgeInsets.only(bottom: ScreenUtil().setHeight(4)),
+                      decoration: BoxDecoration(shape: BoxShape.circle),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100), 
+                        borderRadius: BorderRadius.circular(100),
                         child: Text(
                           this.nombre,
                           style: TextStyle(
-                            fontFamily: 'SF Pro',
-                            fontSize: ScreenUtil().setSp(17),
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                          ),
+                              fontFamily: 'SF Pro',
+                              fontSize: ScreenUtil().setSp(17),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                       ),
                     ),
-
                     Container(
-                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle
-                      ),
+                      padding:
+                          EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
+                      decoration: BoxDecoration(shape: BoxShape.circle),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100), 
+                        borderRadius: BorderRadius.circular(100),
                         child: Text(
                           "Asesor de seguros",
                           style: TextStyle(
-                            fontFamily: 'SF Pro',
-                            fontSize: ScreenUtil().setSp(15),
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white
-                          ),
+                              fontFamily: 'SF Pro',
+                              fontSize: ScreenUtil().setSp(15),
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white),
                         ),
                       ),
                     ),
@@ -120,25 +116,28 @@ class ChatDetailPageAppBar extends StatelessWidget{
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 5.0),
-            child: IconButton(
-              onPressed: () {},
-              padding: EdgeInsets.all(0.0),
-              icon: Image.asset('assets/images/icons/Chat_Call@3x.png', filterQuality: FilterQuality.high,)
-            )
+              padding: EdgeInsets.only(right: 5.0),
+              child: IconButton(
+                  onPressed: () {},
+                  padding: EdgeInsets.all(0.0),
+                  icon: Image.asset(
+                    'assets/images/icons/Chat_Call@3x.png',
+                    filterQuality: FilterQuality.high,
+                  ))),
+          SizedBox(
+            width: ScreenUtil().setWidth(12),
           ),
-          SizedBox(width: ScreenUtil().setWidth(12),),
           Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              // onPressed: () => Navigator.of(context).pushReplacementNamed('home'),
-              onPressed: () {},
-              padding: EdgeInsets.all(0.0),
-              icon: Image.asset('assets/images/icons/Chat_Profile@3x.png', filterQuality: FilterQuality.high,)
-            )
-          ),
+              padding: EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                  // onPressed: () => Navigator.of(context).pushReplacementNamed('home'),
+                  onPressed: () {},
+                  padding: EdgeInsets.all(0.0),
+                  icon: Image.asset(
+                    'assets/images/icons/Chat_Profile@3x.png',
+                    filterQuality: FilterQuality.high,
+                  ))),
         ],
-
       ),
     );
 
@@ -239,20 +238,22 @@ class ChatDetailPageAppBar extends StatelessWidget{
             left: ScreenUtil().setWidth(10),
           ),
           child: IconButton(
-            onPressed: () {
-              SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-                statusBarColor: Color(0xFFF9FAFA),
-                statusBarIconBrightness: Brightness.dark,
-                statusBarBrightness: Brightness.light,
-                systemNavigationBarColor: Color(0xFFF9FAFA),
-                systemNavigationBarDividerColor: Colors.grey,
-                systemNavigationBarIconBrightness: Brightness.dark,
-              ));
-              Navigator.pop(context);
-            },
-            padding: EdgeInsets.all(0.0),
-            icon: Image.asset('assets/images/icons/Chat_Back@3x.png', filterQuality: FilterQuality.high,)
-          ),
+              onPressed: () {
+                SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+                  statusBarColor: Color(0xFFF9FAFA),
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
+                  systemNavigationBarColor: Color(0xFFF9FAFA),
+                  systemNavigationBarDividerColor: Colors.grey,
+                  systemNavigationBarIconBrightness: Brightness.dark,
+                ));
+                Navigator.pop(context);
+              },
+              padding: EdgeInsets.all(0.0),
+              icon: Image.asset(
+                'assets/images/icons/Chat_Back@3x.png',
+                filterQuality: FilterQuality.high,
+              )),
         ),
         iconTheme: IconThemeData(
           color: Color(0xFF202D39),
@@ -260,79 +261,80 @@ class ChatDetailPageAppBar extends StatelessWidget{
         backgroundColor: Color(0xFF0079DE),
         title: Container(
           // padding: EdgeInsets.only(right: 16),
-          child: ( this.admin == null ) ? _animacionSkeleton(context) : Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: (this.admin == null)
+              ? _animacionSkeleton(context)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(4)),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100), 
-                        child: Text(
-                          admin.nombre,
-                          style: TextStyle(
-                            fontFamily: 'SF Pro',
-                            fontSize: ScreenUtil().setSp(17),
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(4)),
+                            decoration: BoxDecoration(shape: BoxShape.circle),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Text(
+                                admin.nombre,
+                                style: TextStyle(
+                                    fontFamily: 'SF Pro',
+                                    fontSize: ScreenUtil().setSp(17),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-
-                    Container(
-                      padding: EdgeInsets.only(bottom: ScreenUtil().setHeight(8)),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100), 
-                        child: Text(
-                          "Asesor de seguros",
-                          style: TextStyle(
-                            fontFamily: 'SF Pro',
-                            fontSize: ScreenUtil().setSp(15),
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white
+                          Container(
+                            padding: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(8)),
+                            decoration: BoxDecoration(shape: BoxShape.circle),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Text(
+                                "Asesor de seguros",
+                                style: TextStyle(
+                                    fontFamily: 'SF Pro',
+                                    fontSize: ScreenUtil().setSp(15),
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 5.0),
-            child: IconButton(
-              onPressed: () {},
-              padding: EdgeInsets.all(0.0),
-              icon: Image.asset('assets/images/icons/Chat_Call@3x.png', filterQuality: FilterQuality.high,)
-            )
+              padding: EdgeInsets.only(right: 5.0),
+              child: IconButton(
+                  onPressed: () {},
+                  padding: EdgeInsets.all(0.0),
+                  icon: Image.asset(
+                    'assets/images/icons/Chat_Call@3x.png',
+                    filterQuality: FilterQuality.high,
+                  ))),
+          SizedBox(
+            width: ScreenUtil().setWidth(12),
           ),
-          SizedBox(width: ScreenUtil().setWidth(12),),
           Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              // onPressed: () => Navigator.of(context).pushReplacementNamed('home'),
-              onPressed: () {},
-              padding: EdgeInsets.all(0.0),
-              icon: Image.asset('assets/images/icons/Chat_Profile@3x.png', filterQuality: FilterQuality.high,)
-            )
-          ),
+              padding: EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                  // onPressed: () => Navigator.of(context).pushReplacementNamed('home'),
+                  onPressed: () {},
+                  padding: EdgeInsets.all(0.0),
+                  icon: Image.asset(
+                    'assets/images/icons/Chat_Profile@3x.png',
+                    filterQuality: FilterQuality.high,
+                  ))),
         ],
       ),
     );
@@ -354,12 +356,12 @@ class ChatDetailPageAppBar extends StatelessWidget{
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(left: ScreenUtil().setWidth(15), bottom: ScreenUtil().setHeight(8)),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle
-                ),
+                padding: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(15),
+                    bottom: ScreenUtil().setHeight(8)),
+                decoration: BoxDecoration(shape: BoxShape.circle),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100), 
+                  borderRadius: BorderRadius.circular(100),
                   child: SkeletonAnimation(
                     child: Container(
                       height: ScreenUtil().setHeight(30),
@@ -371,22 +373,20 @@ class ChatDetailPageAppBar extends StatelessWidget{
                   ),
                 ),
               ),
-
               Container(
-                padding: EdgeInsets.only(left: ScreenUtil().setWidth(15), bottom: ScreenUtil().setHeight(8)),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle
-                ),
+                padding: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(15),
+                    bottom: ScreenUtil().setHeight(8)),
+                decoration: BoxDecoration(shape: BoxShape.circle),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100), 
+                  borderRadius: BorderRadius.circular(100),
                   child: SkeletonAnimation(
                     child: Container(
                       height: ScreenUtil().setHeight(25),
                       width: ScreenUtil().setWidth(120),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Colors.grey[300]
-                      ),
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.grey[300]),
                     ),
                   ),
                 ),

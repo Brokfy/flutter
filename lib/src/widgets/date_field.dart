@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/screenutil.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'hex_color.dart';
 
 class DateField extends StatelessWidget {
@@ -10,7 +9,11 @@ class DateField extends StatelessWidget {
     @required String label,
     @required String placeholder,
     @required Function onTap,
-  }) : _controller = controller, _label = label, _placeholder = placeholder, _onTap = onTap, super(key: key);
+  })  : _controller = controller,
+        _label = label,
+        _placeholder = placeholder,
+        _onTap = onTap,
+        super(key: key);
 
   final TextEditingController _controller;
   final String _label;
@@ -40,25 +43,28 @@ class DateField extends StatelessWidget {
               ),
             ),
           ),
-
           Container(
             height: ScreenUtil().setHeight(55),
             alignment: Alignment.centerLeft,
             child: Container(
               height: double.infinity,
               child: GestureDetector(
-                onTap: () => _onTap( context ),
+                onTap: () => _onTap(context),
                 child: AbsorbPointer(
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: this._placeholder,
-                      contentPadding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(10)),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: ScreenUtil().setHeight(10)),
                       isDense: true,
                       suffixIcon: Container(
                         width: 0,
                         alignment: Alignment(0.99, -0.3),
-                        child: Image.asset('assets/images/Calendar_icon.png', filterQuality: FilterQuality.high, width: 30, height: 30),
+                        child: Image.asset('assets/images/Calendar_icon.png',
+                            filterQuality: FilterQuality.high,
+                            width: 30,
+                            height: 30),
                         // Icon(
                         //   MdiIcons.calendar,
                         //   color: HexColor("#BEC4C7"),
@@ -77,7 +83,7 @@ class DateField extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: ScreenUtil().setSp(18),
                     ),
-                    onTap: () => _onTap( context ),
+                    onTap: () => _onTap(context),
                   ),
                 ),
               ),

@@ -40,6 +40,7 @@ dependencies:
   path_provider: any
   countdown_flutter: ^0.1.2
   image_picker: ^0.6.7+6
+  flutter_document_picker: any  
   dbcrypt: ^1.0.0
   local_auth: ^0.6.1
   file_picker:
@@ -51,6 +52,8 @@ dependencies:
   holding_gesture: any
   flutter_audio_recorder: any
   audioplayers: any
+  firebase_storage: any
+  firebase_core: any
 
 dev_dependencies:
   flutter_test:
