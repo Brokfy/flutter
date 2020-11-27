@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'country_code.dart';
 import 'country_codes.dart';
 import 'selection_dialog.dart';
+import 'selection_dialog_fullscreen.dart';
 
 class CountryCodePicker extends StatefulWidget {
   final ValueChanged<CountryCode> onChanged;
@@ -225,33 +226,34 @@ class CountryCodePickerState extends State<CountryCodePicker> {
         .toList();
   }
 
-  void showCountryCodePickerDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => SelectionDialog(
-        elements,
-        favoriteElements,
-        showCountryOnly: widget.showCountryOnly,
-        emptySearchBuilder: widget.emptySearchBuilder,
-        searchDecoration: widget.searchDecoration,
-        searchStyle: widget.searchStyle,
-        textStyle: widget.dialogTextStyle,
-        showFlag: widget.showFlagDialog != null
-            ? widget.showFlagDialog
-            : widget.showFlag,
-        flagWidth: widget.flagWidth,
-        size: widget.dialogSize,
-        hideSearch: widget.hideSearch,
-      ),
-    ).then((e) {
-      if (e != null) {
-        setState(() {
-          selectedItem = e;
-        });
+  void showCountryCodePickerDialog() async {
+    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<CountryCode>(
+        builder: (BuildContext context) {
+          return SelectionDialogFullScreen(
+            elements,
+            favoriteElements,
+            showCountryOnly: widget.showCountryOnly,
+            emptySearchBuilder: widget.emptySearchBuilder,
+            searchDecoration: widget.searchDecoration,
+            searchStyle: widget.searchStyle,
+            textStyle: widget.dialogTextStyle,
+            showFlag: widget.showFlagDialog != null
+                ? widget.showFlagDialog
+                : widget.showFlag,
+            flagWidth: widget.flagWidth,
+            size: widget.dialogSize,
+            hideSearch: widget.hideSearch,
+            title: 'Seleccionar País'
+          );
+        },
+      fullscreenDialog: true
+    ));
 
-        _publishSelection(e);
-      }
-    });
+    if( seleccion != null ) {
+      setState(() {
+        selectedItem = seleccion;
+      });
+    }
   }
 
   void _publishSelection(CountryCode e) {

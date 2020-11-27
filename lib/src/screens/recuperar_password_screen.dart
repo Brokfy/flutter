@@ -1,8 +1,8 @@
 import 'package:brokfy_app/src/models/verificar_numero_response.dart';
 import 'package:brokfy_app/src/providers/nuevo_usuario.dart';
 import 'package:brokfy_app/src/services/api_service.dart';
-import 'package:brokfy_app/src/widgets/country_code_picker/country_code.dart';
-import 'package:brokfy_app/src/widgets/country_code_picker/country_code_picker.dart';
+import '../widgets/country_code_picker/country_code_picker.dart';
+import '../widgets/country_code_picker/country_code.dart';
 import 'package:brokfy_app/src/widgets/hex_color.dart';
 import 'package:brokfy_app/src/widgets/image_from_assets.dart';
 import 'package:brokfy_app/src/widgets/input_field.dart';
