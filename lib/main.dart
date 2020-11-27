@@ -16,6 +16,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'src/models/admin_model.dart';
 import 'src/services/preferences_service.dart';
 import 'src/screens/login_screen.dart';
 import 'src/screens/intro_screen.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<NuevoUsuario>(create: (_) => NuevoUsuario()),
         ChangeNotifierProvider<FotoUsuarioProvider>(create: (_) => FotoUsuarioProvider()),
         ChangeNotifierProvider<AdminChatProvider>(create: (_) => AdminChatProvider()),
+        ChangeNotifierProvider<AdminModel>(create: (_) => AdminModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -521,256 +521,226 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ));
 
-    return FutureBuilder(
-      future: ApiService.getAdminChat(this.bearer),
-      builder: (BuildContext context, AsyncSnapshot<AdminModel> snapshot) {
-        if (!snapshot.hasData) {
-          return SafeArea(
-              child: Scaffold(
-                  appBar: PreferredSize(
-                      child: ChatDetailPageAppBar(
-                        nombre: this.nombre,
-                        img: this.peerAvatar,
-                        isNew: this.isNew,
-                        bearer: this.bearer,
-                      ),
-                      preferredSize:
-                          Size.fromHeight(ScreenUtil().setHeight(115))),
-                  body: Center(
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(themeColor)))));
-        } else {
-          final adm = AdminModel();
-          adm.id = snapshot.data.id;
-          adm.image = snapshot.data.image;
-          adm.nombre = snapshot.data.nombre +
-              ' ' +
-              snapshot.data.apellidoPaterno +
-              ' ' +
-              snapshot.data.apelldioMaterno;
+    final adm = Provider.of<AdminModel>(context, listen: false);
+    groupChatId = "$id-${adm.id}";
 
-          groupChatId = "$id-${adm.id}";
-          return SafeArea(
-              child: Scaffold(
-                  appBar: PreferredSize(
-                      child: ChatDetailPageAppBar(
-                          nombre: this.nombre,
-                          img: this.peerAvatar,
-                          isNew: this.isNew,
-                          bearer: this.bearer,
-                          admin: adm),
-                      preferredSize:
-                          Size.fromHeight(ScreenUtil().setHeight(115))),
-                  body: Stack(
+    return SafeArea(
+      child: Scaffold(
+          appBar: PreferredSize(
+              child: ChatDetailPageAppBar(
+                  nombre: this.nombre,
+                  img: this.peerAvatar,
+                  isNew: this.isNew,
+                  bearer: this.bearer,
+                  admin: adm),
+              preferredSize:
+                  Size.fromHeight(ScreenUtil().setHeight(95))),
+          body: Stack(
+            children: <Widget>[
+              Container(
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('messages')
+                      .doc(groupChatId)
+                      .collection(groupChatId)
+                      .orderBy('timestamp', descending: true)
+                      .limit(_limit)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                          child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  themeColor)));
+                    } else {
+                      if (snapshot.data.docs.length == 0) {
+                        //return Container();
+                        return Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Column(children: [
+                              Text(
+                                  "Tiempo aproximado de espera: 5 minutos",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontFamily: 'SF Pro',
+                                      fontSize: ScreenUtil().setSp(12),
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF979797),
+                                      letterSpacing:
+                                          ScreenUtil().setSp(0.4))),
+                              Text(
+                                  "Por favor espera unos minutos en lo que te asignamos un asesor.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontFamily: 'SF Pro',
+                                      fontSize: ScreenUtil().setSp(12),
+                                      fontWeight: FontWeight.w200,
+                                      letterSpacing:
+                                          ScreenUtil().setSp(0.4),
+                                      color: Color(0xFF979797))),
+                            ]));
+                      } else {
+                        listMessage.addAll(snapshot.data.docs);
+                        return Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Column(
+                              children: [
+                                Text(
+                                    "Tiempo aproximado de espera: 5 minutos",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: 'SF Pro',
+                                        fontSize:
+                                            ScreenUtil().setSp(12),
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF979797),
+                                        letterSpacing:
+                                            ScreenUtil().setSp(0.4))),
+                                Text(
+                                    "Por favor espera unos minutos en lo que te asignamos un asesor.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: 'SF Pro',
+                                        fontSize:
+                                            ScreenUtil().setSp(12),
+                                        fontWeight: FontWeight.w200,
+                                        letterSpacing:
+                                            ScreenUtil().setSp(0.4),
+                                        color: Color(0xFF979797))),
+                                ListView.builder(
+                                  itemCount: snapshot.data.size,
+                                  shrinkWrap: true,
+                                  reverse: true,
+                                  padding: EdgeInsets.only(
+                                      top: 10, bottom: 10),
+                                  physics:
+                                      NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return ChatBubble(
+                                      chatMessage: ChatMessage(
+                                        message: snapshot
+                                            .data.docs[index]
+                                            .data()['content'],
+                                        timestamp: snapshot
+                                            .data.docs[index]
+                                            .data()['timestamp'],
+                                        messageType: snapshot
+                                            .data.docs[index]
+                                            .data()['type'],
+                                        type: (id ==
+                                                snapshot
+                                                    .data.docs[index]
+                                                    .data()['idFrom'])
+                                            ? MessageType.Sender
+                                            : MessageType.Receiver,
+                                      ),
+                                    );
+                                  },
+                                )
+                              ],
+                            ));
+                      }
+                    }
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  padding:
+                      EdgeInsets.only(left: 15, right: 15, bottom: 0),
+                  height: 60,
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Row(
                     children: <Widget>[
-                      Container(
-                        child: StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('messages')
-                              .doc(groupChatId)
-                              .collection(groupChatId)
-                              .orderBy('timestamp', descending: true)
-                              .limit(_limit)
-                              .snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                  child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          themeColor)));
-                            } else {
-                              if (snapshot.data.docs.length == 0) {
-                                //return Container();
-                                return Padding(
-                                    padding: EdgeInsets.only(top: 20),
-                                    child: Column(children: [
-                                      Text(
-                                          "Tiempo aproximado de espera: 5 minutos",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontFamily: 'SF Pro',
-                                              fontSize: ScreenUtil().setSp(12),
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF979797),
-                                              letterSpacing:
-                                                  ScreenUtil().setSp(0.4))),
-                                      Text(
-                                          "Por favor espera unos minutos en lo que te asignamos un asesor.",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontFamily: 'SF Pro',
-                                              fontSize: ScreenUtil().setSp(12),
-                                              fontWeight: FontWeight.w200,
-                                              letterSpacing:
-                                                  ScreenUtil().setSp(0.4),
-                                              color: Color(0xFF979797))),
-                                    ]));
-                              } else {
-                                listMessage.addAll(snapshot.data.docs);
-                                return Padding(
-                                    padding: EdgeInsets.only(top: 20),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                            "Tiempo aproximado de espera: 5 minutos",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontFamily: 'SF Pro',
-                                                fontSize:
-                                                    ScreenUtil().setSp(12),
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xFF979797),
-                                                letterSpacing:
-                                                    ScreenUtil().setSp(0.4))),
-                                        Text(
-                                            "Por favor espera unos minutos en lo que te asignamos un asesor.",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontFamily: 'SF Pro',
-                                                fontSize:
-                                                    ScreenUtil().setSp(12),
-                                                fontWeight: FontWeight.w200,
-                                                letterSpacing:
-                                                    ScreenUtil().setSp(0.4),
-                                                color: Color(0xFF979797))),
-                                        ListView.builder(
-                                          itemCount: snapshot.data.size,
-                                          shrinkWrap: true,
-                                          reverse: true,
-                                          padding: EdgeInsets.only(
-                                              top: 10, bottom: 10),
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            return ChatBubble(
-                                              chatMessage: ChatMessage(
-                                                message: snapshot
-                                                    .data.docs[index]
-                                                    .data()['content'],
-                                                timestamp: snapshot
-                                                    .data.docs[index]
-                                                    .data()['timestamp'],
-                                                messageType: snapshot
-                                                    .data.docs[index]
-                                                    .data()['type'],
-                                                type: (id ==
-                                                        snapshot
-                                                            .data.docs[index]
-                                                            .data()['idFrom'])
-                                                    ? MessageType.Sender
-                                                    : MessageType.Receiver,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      ],
-                                    ));
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Container(
-                          padding:
-                              EdgeInsets.only(left: 15, right: 15, bottom: 0),
-                          height: 60,
-                          width: double.infinity,
-                          color: Colors.white,
-                          child: Row(
-                            children: <Widget>[
-                              isDecidingVoice
-                                  ? _chatCancelVoiceButton()
-                                  : _chatMenuButton(),
-                              Expanded(
-                                child: isRecording
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: Icon(Icons.play_arrow),
-                                            disabledColor:
-                                                Colors.grey.withOpacity(0.5),
-                                            onPressed: _recording?.status ==
-                                                    RecordingStatus.Stopped
-                                                ? _play
-                                                : null,
-                                          ),
-                                          Text(f.format(_voiceSeconds),
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: Colors.black))
-                                        ],
-                                      )
-                                    : TextFormField(
-                                        controller: textEditingController,
-                                        textInputAction: TextInputAction.send,
-                                        onFieldSubmitted: (term) {
-                                          textEditingController.clear();
-                                          Chat.ChatAsesorService.db
-                                              .onSendMessage(
-                                                  term,
-                                                  1,
-                                                  id,
-                                                  this.peerId,
-                                                  admin,
-                                                  isNew,
-                                                  groupChatId);
-                                          //onSendMessage(term, 1);
-                                          listScrollController.animateTo(0.0,
-                                              duration:
-                                                  Duration(milliseconds: 300),
-                                              curve: Curves.easeOut);
-                                        },
-                                        onChanged: (text) {
-                                          setState(() {
-                                            _textField = text;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: "Escribir mensaje",
-                                            hintStyle: TextStyle(
-                                                color: Colors.grey.shade500),
-                                            border: InputBorder.none),
-                                      ),
+                      isDecidingVoice
+                          ? _chatCancelVoiceButton()
+                          : _chatMenuButton(),
+                      Expanded(
+                        child: isRecording
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.play_arrow),
+                                    disabledColor:
+                                        Colors.grey.withOpacity(0.5),
+                                    onPressed: _recording?.status ==
+                                            RecordingStatus.Stopped
+                                        ? _play
+                                        : null,
+                                  ),
+                                  Text(f.format(_voiceSeconds),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black))
+                                ],
+                              )
+                            : TextFormField(
+                                controller: textEditingController,
+                                textInputAction: TextInputAction.send,
+                                onFieldSubmitted: (term) {
+                                  textEditingController.clear();
+                                  Chat.ChatAsesorService.db
+                                      .onSendMessage(
+                                          term,
+                                          1,
+                                          id,
+                                          this.peerId,
+                                          admin,
+                                          isNew,
+                                          groupChatId);
+                                  //onSendMessage(term, 1);
+                                  listScrollController.animateTo(0.0,
+                                      duration:
+                                          Duration(milliseconds: 300),
+                                      curve: Curves.easeOut);
+                                },
+                                onChanged: (text) {
+                                  setState(() {
+                                    _textField = text;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                    hintText: "Escribir mensaje",
+                                    hintStyle: TextStyle(
+                                        color: Colors.grey.shade500),
+                                    border: InputBorder.none),
                               ),
-                              _recording?.status == RecordingStatus.Stopped &&
-                                      isRecording
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        Chat.ChatAsesorService.db.uploadFile(
-                                            _recording.path,
-                                            "audio",
-                                            id,
-                                            this.peerId,
-                                            admin,
-                                            isNew,
-                                            groupChatId);
-                                        cancelVoiceMessage();
-                                      },
-                                      child: Text(
-                                        "Listo",
-                                        style: TextStyle(
-                                            color: Color(0xFF0079DE),
-                                            fontSize: 14),
-                                      ),
-                                    )
-                                  : textEditingController.text != ''
-                                      ? _sendButton
-                                      : _voiceButton,
-                            ],
-                          ),
-                        ),
                       ),
+                      _recording?.status == RecordingStatus.Stopped &&
+                              isRecording
+                          ? GestureDetector(
+                              onTap: () {
+                                Chat.ChatAsesorService.db.uploadFile(
+                                    _recording.path,
+                                    "audio",
+                                    id,
+                                    this.peerId,
+                                    admin,
+                                    isNew,
+                                    groupChatId);
+                                cancelVoiceMessage();
+                              },
+                              child: Text(
+                                "Listo",
+                                style: TextStyle(
+                                    color: Color(0xFF0079DE),
+                                    fontSize: 14),
+                              ),
+                            )
+                          : textEditingController.text != ''
+                              ? _sendButton
+                              : _voiceButton,
                     ],
-                  )));
-        }
-      },
-    );
+                  ),
+                ),
+              ),
+            ],
+          )));
   }
 }

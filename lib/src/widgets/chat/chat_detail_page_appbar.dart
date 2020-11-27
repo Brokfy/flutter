@@ -231,7 +231,7 @@ class ChatDetailPageAppBar extends StatelessWidget {
 
   Widget _appBarChatNuevo(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: ScreenUtil().setHeight(15)),
+      // padding: EdgeInsets.only(top: ScreenUtil().setHeight(15)),
       child: AppBar(
         leading: Container(
           padding: EdgeInsets.only(

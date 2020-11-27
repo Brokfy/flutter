@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../models/chat_inicial_response.dart' as chatInicial;
 import '../models/chat_subir_poliza_response.dart' as chatSubirPoliza;
@@ -23,6 +24,8 @@ import 'package:path/path.dart' as pathLib;
 import 'package:simple_pdf_viewer/simple_pdf_viewer.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 import 'package:firebase_core/firebase_core.dart';
+import '../models/admin_model.dart';
+import '../widgets/procesando.dart';
 
 class ChatPolizaScreen extends StatefulWidget {
   @override
@@ -48,6 +51,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
   List<MarcasResponse> marcas = [];
   List<ModelosAutoResponse> modelos = [];
   List<CodigoPostalResponse> colonias = [];
+  bool iniciandoChatAsesor = false;
 
   Map<String, dynamic> agregarPolizaData = {
     "aseguradora": null,
@@ -109,6 +113,14 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
 
   @override
   void didChangeDependencies() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: HexColor("#F9FAFA"),
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: HexColor("#F9FAFA"),
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     super.didChangeDependencies();
     initChat();
   }
@@ -139,6 +151,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
           "mensaje": mensaje,
           "autor": "Brokfy"
         });
+
         setState(() {});
         index++;
       }
@@ -210,14 +223,6 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: HexColor("#F9FAFA"),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: HexColor("#F9FAFA"),
-      systemNavigationBarDividerColor: Colors.grey,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
     ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
     if ( _scrollController.positions.length > 0 ) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -3337,7 +3342,24 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                           Container(
                             height: ScreenUtil().setHeight(60),
                             child: RaisedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                if( iniciandoChatAsesor ) return;
+                                iniciandoChatAsesor = true;
+                                setState(() {});
+                                AuthApiResponse userInfo = await DBService.db.getAuthFirst();
+                                AdminModelResponse adminResponse = await ApiService.getAdminChat(userInfo.access_token);
+                                
+                                final admin = Provider.of<AdminModel>(context, listen: false);
+                                admin.id = adminResponse.id;
+                                admin.nombre = admin.nombre;
+                                admin.apellidoPaterno = adminResponse.apellidoPaterno;
+                                admin.apelldioMaterno = adminResponse.apelldioMaterno;
+                                admin.image = adminResponse.image;
+                                admin.nombre = '${adminResponse.nombre} ${adminResponse.apellidoPaterno} ${adminResponse.apelldioMaterno}';
+                                
+                                iniciandoChatAsesor = false;
+                                setState(() {});
+
                                 Navigator.of(context).pushReplacementNamed('chat_detail');
                               },
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
@@ -3348,7 +3370,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                               padding: EdgeInsets.all(0.0),
                               child: Ink(
                                 decoration: BoxDecoration(
-                                  color: HexColor("#C4C4C4"),
+                                  color: !iniciandoChatAsesor ? HexColor("#C4C4C4") : null,
                                   gradient: LinearGradient(
                                     colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
                                     begin: Alignment.topCenter,
@@ -3360,7 +3382,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                                   // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
                                   width: ScreenUtil().setWidth(312),
                                   alignment: Alignment.center,
-                                  child: Text(
+                                  child: iniciandoChatAsesor == true ? Procesando() : Text(
                                     "Iniciar Chat",
                                     style: TextStyle(
                                       fontFamily: 'SF Pro', 

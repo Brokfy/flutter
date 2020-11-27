@@ -58,7 +58,7 @@ class ApiService {
     return AuthApiResponse.fromJson(json.decode(response.body));
   }
 
-  static Future<AdminModel> getAdminChat(String bearer) async {
+  static Future<AdminModelResponse> getAdminChat(String bearer) async {
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       'authorization': 'Bearer ' + bearer,
@@ -72,7 +72,7 @@ class ApiService {
       throw new Exception("No se pudo procesar la solicitud");
     }
     String source = Utf8Decoder().convert(response.bodyBytes);
-    AdminModel adminModel = AdminModel.fromJson(json.decode(source));
+    AdminModelResponse adminModel = AdminModelResponse.fromJson(json.decode(source));
     return adminModel;
   }
 
