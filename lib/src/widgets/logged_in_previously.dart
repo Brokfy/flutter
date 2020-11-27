@@ -32,6 +32,7 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
   PreferencesService _pref;
   LocalAuthentication _localAuth;
   bool _isBiometricAvailable = false;
+  bool _runningLoginHuella = false;
 
   @override
   void initState() {
@@ -138,6 +139,9 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
             localizedReason: "Iniciar sesión con huella digital en Brokfy");
         if (didAuthenticate) {
           _pref.isLogged = false;
+          _runningLoginHuella = true;
+          setState(() {});
+          
           AuthApiResponse user = await DBService.db.getAuthFirst();
           String password = utf8.decode(base64Decode(user.password));
 
@@ -147,6 +151,8 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
           authResponse.password = user.password;
           await DBService.db.insertAuth(authResponse);
 
+          _runningLoginHuella = true;
+          setState(() {});
           Navigator.pushReplacementNamed(context, "home");
         }
       }
@@ -168,148 +174,166 @@ class _LoggedInPreviouslyState extends State<LoggedInPreviously> {
     ));
     ScreenUtil.init(context, width: 414, height: 896, allowFontScaling: true);
 
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
+    return Stack(
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+                width: double.infinity,
+                // height: ScreenUtil().setHeight(82),
+                margin: EdgeInsets.only(
+                  left: ScreenUtil().setWidth(40),
+                  right: ScreenUtil().setWidth(41),
+                  top: ScreenUtil().setHeight(97),
+                ),
+                child: FotoUsuario(url: widget.userInfo.nameAws)),
+            Container(
+                width: double.infinity,
+                // height: ScreenUtil().setHeight(82),
+                margin: EdgeInsets.only(
+                  left: ScreenUtil().setWidth(40),
+                  right: ScreenUtil().setWidth(41),
+                  top: ScreenUtil().setHeight(27),
+                ),
+                alignment: Alignment.center,
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Hola ',
+                    style: DefaultTextStyle.of(context).style.copyWith(
+                          inherit: true,
+                          color: HexColor("#000000"),
+                          fontSize: ScreenUtil().setSp(20),
+                          fontFamily: 'SF Pro',
+                        ),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text:
+                              "${widget.userInfo.nombre} ${widget.userInfo.apellidoPaterno}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontFamily: 'SF Pro')),
+                    ],
+                  ),
+                )),
+            Container(
               width: double.infinity,
-              // height: ScreenUtil().setHeight(82),
+              height: ScreenUtil().setHeight(90),
               margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(40),
                 right: ScreenUtil().setWidth(41),
-                top: ScreenUtil().setHeight(97),
+                top: ScreenUtil().setHeight(36),
               ),
-              child: FotoUsuario(url: widget.userInfo.nameAws)),
-          Container(
-              width: double.infinity,
-              // height: ScreenUtil().setHeight(82),
+              child: InputField(
+                keyboardType: TextInputType.text,
+                controller: _passwordController,
+                valido: _passwordValido,
+                error: _passwordError,
+                label: 'Contraseña',
+                placeholder: 'Escribe tu contraseña',
+                obscureText: true,
+                showSuffixIcon: true,
+              ),
+            ),
+            Container(
+              height: ScreenUtil().setHeight(60),
               margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(40),
                 right: ScreenUtil().setWidth(41),
-                top: ScreenUtil().setHeight(27),
+                top: ScreenUtil().setHeight(36),
               ),
-              alignment: Alignment.center,
+              decoration: _passwordValido && !running
+                  ? BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: HexColor("#0079DE").withOpacity(0.5),
+                          spreadRadius: 0,
+                          blurRadius: ScreenUtil().setHeight(9),
+                          offset: Offset(
+                              0,
+                              ScreenUtil()
+                                  .setHeight(3)), // changes position of shadow
+                        ),
+                      ],
+                    )
+                  : null,
+              child: RaisedButton(
+                onPressed: _passwordValido && !running ? _login : null,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+                disabledColor: HexColor("#C4C4C4"),
+                textColor: Colors.white,
+                disabledTextColor: Colors.white,
+                padding: EdgeInsets.all(0.0),
+                child: Ink(
+                  decoration: BoxDecoration(
+                      color: HexColor("#C4C4C4"),
+                      gradient: _passwordValido && !running
+                          ? LinearGradient(
+                              colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            )
+                          : null,
+                      borderRadius: BorderRadius.circular(5.0)),
+                  child: Container(
+                    // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+                    alignment: Alignment.center,
+                    child: running
+                        ? Procesando()
+                        : Text(
+                            "Inicia Sesión",
+                            style: TextStyle(
+                              color: HexColor("#FFFFFF"),
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.bold,
+                              fontSize: ScreenUtil().setSp(15),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: ScreenUtil().setHeight(60),
+              margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(40),
+                right: ScreenUtil().setWidth(41),
+                top: ScreenUtil().setHeight(36),
+              ),
               child: RichText(
                 text: TextSpan(
-                  text: 'Hola ',
-                  style: DefaultTextStyle.of(context).style.copyWith(
-                        inherit: true,
-                        color: HexColor("#000000"),
-                        fontSize: ScreenUtil().setSp(20),
-                        fontFamily: 'SF Pro',
-                      ),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text:
-                            "${widget.userInfo.nombre} ${widget.userInfo.apellidoPaterno}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontFamily: 'SF Pro')),
-                  ],
-                ),
-              )),
-          Container(
-            width: double.infinity,
-            height: ScreenUtil().setHeight(90),
-            margin: EdgeInsets.only(
-              left: ScreenUtil().setWidth(40),
-              right: ScreenUtil().setWidth(41),
-              top: ScreenUtil().setHeight(36),
-            ),
-            child: InputField(
-              keyboardType: TextInputType.text,
-              controller: _passwordController,
-              valido: _passwordValido,
-              error: _passwordError,
-              label: 'Contraseña',
-              placeholder: 'Escribe tu contraseña',
-              obscureText: true,
-              showSuffixIcon: true,
-            ),
-          ),
-          Container(
-            height: ScreenUtil().setHeight(60),
-            margin: EdgeInsets.only(
-              left: ScreenUtil().setWidth(40),
-              right: ScreenUtil().setWidth(41),
-              top: ScreenUtil().setHeight(36),
-            ),
-            decoration: _passwordValido && !running
-                ? BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: HexColor("#0079DE").withOpacity(0.5),
-                        spreadRadius: 0,
-                        blurRadius: ScreenUtil().setHeight(9),
-                        offset: Offset(
-                            0,
-                            ScreenUtil()
-                                .setHeight(3)), // changes position of shadow
-                      ),
-                    ],
-                  )
-                : null,
-            child: RaisedButton(
-              onPressed: _passwordValido && !running ? _login : null,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-              disabledColor: HexColor("#C4C4C4"),
-              textColor: Colors.white,
-              disabledTextColor: Colors.white,
-              padding: EdgeInsets.all(0.0),
-              child: Ink(
-                decoration: BoxDecoration(
-                    color: HexColor("#C4C4C4"),
-                    gradient: _passwordValido && !running
-                        ? LinearGradient(
-                            colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          )
-                        : null,
-                    borderRadius: BorderRadius.circular(5.0)),
-                child: Container(
-                  // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
-                  alignment: Alignment.center,
-                  child: running
-                      ? Procesando()
-                      : Text(
-                          "Inicia Sesión",
-                          style: TextStyle(
-                            color: HexColor("#FFFFFF"),
-                            fontFamily: 'SF Pro',
-                            fontWeight: FontWeight.bold,
-                            fontSize: ScreenUtil().setSp(15),
-                          ),
-                        ),
-                ),
+                    text: 'No eres ${this.widget.userInfo.nombre}?',
+                    style: TextStyle(
+                        color: HexColor("#0079DE"),
+                        fontWeight: FontWeight.bold,
+                        fontSize: ScreenUtil().setSp(14),
+                        fontFamily: 'SF Pro'),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        FocusScope.of(context).unfocus();
+                        await DBService.db.deleteAllAuth();
+                        Navigator.of(context).pushReplacementNamed('login');
+                      }),
               ),
             ),
+          ]
+        ),
+
+        _runningLoginHuella ? Container(
+          color: Color(0xFFFAFAFA).withOpacity(0.8),
+          height: ScreenUtil.screenHeight,
+          width: ScreenUtil.screenWidth,
+          child: Center(
+            child: Container(
+              height: ScreenUtil().setWidth(32),
+              width: ScreenUtil().setWidth(32),
+              child: CircularProgressIndicator()
+            )
           ),
-          Container(
-            height: ScreenUtil().setHeight(60),
-            margin: EdgeInsets.only(
-              left: ScreenUtil().setWidth(40),
-              right: ScreenUtil().setWidth(41),
-              top: ScreenUtil().setHeight(36),
-            ),
-            child: RichText(
-              text: TextSpan(
-                  text: 'No eres ${this.widget.userInfo.nombre}?',
-                  style: TextStyle(
-                      color: HexColor("#0079DE"),
-                      fontWeight: FontWeight.bold,
-                      fontSize: ScreenUtil().setSp(14),
-                      fontFamily: 'SF Pro'),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () async {
-                      FocusScope.of(context).unfocus();
-                      await DBService.db.deleteAllAuth();
-                      Navigator.of(context).pushReplacementNamed('login');
-                    }),
-            ),
-          ),
-        ]);
+        ) : Container(),
+      ]
+    );
   }
 }
