@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/screenutil.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'boton_sos.dart';
-import 'country_code_picker/country_code.dart';
+import '../widgets/country_code_picker/country_code.dart';
 import '../widgets/country_code_picker/country_code_picker.dart';
 import 'hex_color.dart';
 import 'input_field.dart';

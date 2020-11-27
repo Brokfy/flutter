@@ -253,6 +253,7 @@ class CountryCodePickerState extends State<CountryCodePicker> {
       setState(() {
         selectedItem = seleccion;
       });
+      _publishSelection(seleccion);
     }
   }
 
