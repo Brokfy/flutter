@@ -25,10 +25,18 @@ class _ChatBubbleState extends State<ChatBubble> {
                     : Colors.white)));
       case 2:
         //image
-        return Image.network(widget.chatMessage.message);
+        return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.60,
+            child: Card(
+                elevation: 0,
+                child: InkWell(
+                    onTap: () {},
+                    child: Image.network(widget.chatMessage.message))));
       case 4:
         //audio
-        return PlayerWidget(url: widget.chatMessage.message);
+        return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.60,
+            child: PlayerWidget(url: widget.chatMessage.message));
       default:
         return Container();
     }
@@ -43,21 +51,32 @@ class _ChatBubbleState extends State<ChatBubble> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
-          margin: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+          padding: widget.chatMessage.messageType == 2 ||
+                  widget.chatMessage.messageType == 3
+              ? EdgeInsets.all(0)
+              : EdgeInsets.all(2),
+          margin: EdgeInsets.only(
+              left: widget.chatMessage.type == MessageType.Receiver ? 10 : 50,
+              right: widget.chatMessage.type == MessageType.Receiver ? 50 : 10,
+              bottom: 5),
           child: Align(
             alignment: (widget.chatMessage.type == MessageType.Receiver
                 ? Alignment.topLeft
                 : Alignment.topRight),
             child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: (widget.chatMessage.type == MessageType.Receiver
-                      ? Colors.grey.shade200
-                      : Color(0xFF0079DE)),
+                  borderRadius: widget.chatMessage.messageType == 2
+                      ? BorderRadius.circular(20)
+                      : BorderRadius.circular(10),
+                  color: widget.chatMessage.messageType == 2
+                      ? null
+                      : (widget.chatMessage.type == MessageType.Receiver
+                          ? Colors.grey.shade200
+                          : Color(0xFF0079DE)),
                 ),
-                padding: EdgeInsets.only(
-                    top: 12, bottom: 12, right: 10.0, left: 25.0),
+                padding: widget.chatMessage.messageType != 1
+                    ? EdgeInsets.all(0)
+                    : EdgeInsets.all(10),
                 child: message()),
           ),
         ),

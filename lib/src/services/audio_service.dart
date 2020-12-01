@@ -73,7 +73,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       onPressed: _isPlaying ? null : () => _play(),
       iconSize: 30.0,
       icon: Icon(Icons.play_arrow),
-      color: Colors.cyan,
+      color: Color(0xFF0079DE),
     );
   }
 
@@ -83,44 +83,49 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       onPressed: _isPlaying ? () => _pause() : null,
       iconSize: 30.0,
       icon: Icon(Icons.pause),
-      color: Colors.cyan,
+      color: Color(0xFF0079DE),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _isPlaying ? pauseButton() : playButton(),
-            Padding(
-              padding: EdgeInsets.all(0.0),
-              child: Stack(
-                children: [
-                  Slider(
-                    onChanged: (v) {
-                      final Position = v * _duration.inMilliseconds;
-                      _audioPlayer
-                          .seek(Duration(milliseconds: Position.round()));
-                    },
-                    value: (_position != null &&
-                            _duration != null &&
-                            _position.inMilliseconds > 0 &&
-                            _position.inMilliseconds < _duration.inMilliseconds)
-                        ? _position.inMilliseconds / _duration.inMilliseconds
-                        : 0.0,
-                  ),
-                ],
-              ),
+      children: [
+        Expanded(flex: 1, child: _isPlaying ? pauseButton() : playButton()),
+        Expanded(
+          flex: 4,
+          child: Padding(
+            padding: EdgeInsets.all(0.0),
+            child: Stack(
+              children: [
+                Slider(
+                  activeColor: Color(0xFF0079DE),
+                  inactiveColor: Color(0xFF0079DE),
+                  onChanged: (v) {
+                    final Position = v * _duration.inMilliseconds;
+                    _audioPlayer.seek(Duration(milliseconds: Position.round()));
+                  },
+                  value: (_position != null &&
+                          _duration != null &&
+                          _position.inMilliseconds > 0 &&
+                          _position.inMilliseconds < _duration.inMilliseconds)
+                      ? _position.inMilliseconds / _duration.inMilliseconds
+                      : 0.0,
+                ),
+              ],
             ),
-            Text(
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Text(
               _isPlaying ? '${_positionText ?? ''}' : '${_durationText ?? ''}',
-              style: TextStyle(fontSize: 14.0),
+              style: TextStyle(fontSize: 18.0, color: Color(0xFF0079DE)),
             ),
-          ],
+          ),
         ),
       ],
     );
