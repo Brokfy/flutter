@@ -20,6 +20,7 @@ import '../models/modelos_auto_response.dart';
 import '../widgets/loading.dart';
 import '../widgets/select_option_from_list.dart';
 import '../widgets/jumping_dots_progress_indicator.dart';
+import '../widgets/selector_multiple.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:simple_pdf_viewer/simple_pdf_viewer.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
@@ -270,7 +271,9 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
         )
       ),
       child: Column(
-        children: dataEntryType == "accionPrincipal" ? _seleccionAccionPrincipalBuild() : 
+        children: 
+          // dataEntryType == "accionPrincipal" ? _seleccionSeguridadBuild() : 
+          dataEntryType == "accionPrincipal" ? _seleccionAccionPrincipalBuild() : 
           dataEntryType == "aseguradora" ? _seleccionAseguradoraBuild() : 
           dataEntryType == "tipoPoliza" ? _seleccionTipoPolizaBuild() : 
           dataEntryType == "tipoPolizaContratar" ? _seleccionTipoPolizaContratarBuild() : 
@@ -294,6 +297,107 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
           [],
       ),
     );
+  }
+  
+  List<Widget> _seleccionSeguridadBuild() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(
+          top: ScreenUtil().setHeight(28),
+          bottom: ScreenUtil().setHeight(28),
+        ),
+        child: Container(
+          height: ScreenUtil().setHeight(60),
+          margin: EdgeInsets.symmetric(
+            // vertical: ScreenUtil().setHeight(28),
+            horizontal: ScreenUtil().setWidth(50),
+          ),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: HexColor("#0079DE").withOpacity(0.5),
+                spreadRadius: 0,
+                blurRadius: ScreenUtil().setHeight(9),
+                offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+              ),
+            ],
+          ),
+          child: RaisedButton(
+            onPressed: () async {
+              String anioSeleccionado = _continuacionChat[indexPregunta].opciones[0].data[contratarPolizaData["year"]].anio.toString();
+              contratarPolizaData["year"] = anioSeleccionado;
+              _chat.add({
+                "mensaje": anioSeleccionado,
+                "autor": "Usuario"
+              });
+              showDataEntry = false;
+              indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+              setState(() {});
+
+              for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                writting = true;
+                setState(() {});
+                await Future.delayed(Duration(milliseconds: 80));
+                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+
+                await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+                writting = false;
+                setState(() {});
+                await Future.delayed(Duration(milliseconds: 80));
+
+                _chat.add({
+                  "mensaje": pregunta.pregunta,
+                  "autor": "Brokfy"
+                });  
+              }
+
+              marcas = await ApiService.getMarcasXAnio(_continuacionChat[indexPregunta].opciones[0].endpoint, contratarPolizaData["year"]);
+
+              showDataEntry = true;
+              dataEntryType = "marca";
+              setState(() {});
+              await Future.delayed(Duration(milliseconds: 80));
+              _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+              setState(() {});
+            },
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+            disabledColor: HexColor("#C4C4C4"),
+            textColor: Colors.white,
+            disabledTextColor: Colors.white,
+            padding: EdgeInsets.all(0.0),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: HexColor("#C4C4C4"),
+                gradient: LinearGradient(
+                  colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(5.0)
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Continuar",
+                      style: TextStyle(
+                        color: HexColor("#FFFFFF"),
+                        fontWeight: FontWeight.bold,
+                        fontSize: ScreenUtil().setSp(15),
+                        fontFamily: 'SF Pro', 
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        )
+      )
+    ];
   }
 
   List<Widget> _seleccionContratarMenos500MtsBuild() {
