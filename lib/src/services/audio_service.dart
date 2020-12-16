@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 enum PlayerState { stopped, playing, paused }
 enum PlayingRouteState { speakers, earpiece }
@@ -29,6 +30,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   AudioPlayerState _audioPlayerState;
   Duration _duration;
   Duration _position;
+  final f = new DateFormat('mm:ss');
 
   PlayerState _playerState = PlayerState.stopped;
   PlayingRouteState _playingRouteState = PlayingRouteState.speakers;
@@ -94,7 +96,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       children: [
         Expanded(flex: 1, child: _isPlaying ? pauseButton() : playButton()),
         Expanded(
-          flex: 4,
+          flex: 5,
           child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Stack(
@@ -122,8 +124,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           child: Padding(
             padding: EdgeInsets.only(right: 10),
             child: Text(
-              _isPlaying ? '${_positionText ?? ''}' : '${_durationText ?? ''}',
-              style: TextStyle(fontSize: 18.0, color: Color(0xFF0079DE)),
+              _isPlaying
+                  ? f.format(new DateTime.fromMillisecondsSinceEpoch(
+                      _position == null ? 0 : _position.inMilliseconds))
+                  : f.format(new DateTime.fromMillisecondsSinceEpoch(
+                      _duration == null ? 0 : _duration.inMilliseconds)),
+              style: TextStyle(fontSize: 16.0, color: Color(0xFF0079DE)),
             ),
           ),
         ),

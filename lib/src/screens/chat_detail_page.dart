@@ -31,6 +31,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore.dart';
 import 'package:image_picker/image_picker.dart'; // For Image Picker
 //import 'package:audio_picker/audio_picker.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter_document_picker/flutter_document_picker.dart';
 
 enum MessageType {
@@ -59,9 +60,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String groupChatId;
   String _textField = '';
   bool isDecidingVoice = false;
-
+  String ultimaFecha;
   DateTime _voiceSeconds = DateTime.parse("1999-01-01 00:00:00Z");
   final f = new DateFormat('mm:ss');
+  final dayf = new DateFormat('dd/MM/yyyy');
   bool isRecording = false;
   Timer _timer;
 
@@ -252,8 +254,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   void getFile(String filetype) async {
     String file;
     switch (filetype) {
-      case "audio":
+      case "video":
         //file = await AudioPicker.pickAudio();
+        var f = await ImagePicker.pickVideo(source: ImageSource.camera);
+        file = f.path;
+        break;
+      case "takeImage":
+        var f = await ImagePicker.pickImage(source: ImageSource.camera);
+        file = f.path;
         break;
       case "image":
         var f = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -280,85 +288,140 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         builder: (context) {
           List<SendMenuItems> menuItems = [
             SendMenuItems(
-                text: "Photos & Videos",
+                text: "Tomar una foto",
+                icons: Icons.insert_drive_file,
+                color: Colors.blue,
+                action: () {
+                  getFile("takeImage");
+                }),
+            SendMenuItems(
+                text: "Grabar un video",
+                icons: Icons.music_note,
+                color: Colors.orange,
+                action: () {
+                  getFile("video");
+                }),
+            SendMenuItems(
+                text: "Galería de fotos y videos",
                 icons: Icons.image,
                 color: Colors.amber,
                 action: () {
                   getFile("image");
-                }),
-            SendMenuItems(
-                text: "Document",
-                icons: Icons.insert_drive_file,
-                color: Colors.blue,
-                action: () {
-                  getFile("document");
-                }),
-            SendMenuItems(
-                text: "Audio",
-                icons: Icons.music_note,
-                color: Colors.orange,
-                action: () {
-                  getFile("audio");
                 }),
             //SendMenuItems(text: "Location", icons: Icons.location_on, color: Colors.green),
             //SendMenuItems(text: "Contact", icons: Icons.person, color: Colors.purple),
           ];
 
           return Container(
-            height: MediaQuery.of(context).size.width * 0.70,
+            //height: MediaQuery.of(context).size.width * 0.70,
             color: Color(0xff737373),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20)),
-              ),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Center(
-                    child: Container(
-                      height: 4,
-                      width: 50,
-                      color: Colors.grey.shade200,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ListView.builder(
-                    itemCount: menuItems.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
-                        child: ListTile(
-                          onTap: menuItems[index].action,
-                          leading: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: menuItems[index].color.shade50,
+            child: Column(children: [
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10, top: 15),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: Text(
+                          "Selecciona una opción:",
+                          style: TextStyle(color: Colors.black87, fontSize: 14),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 17,
+                      ),
+                      ListView.builder(
+                        itemCount: menuItems.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: menuItems[index].action,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: 30, right: 30, top: 7, bottom: 7),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF0079DE),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Center(
+                                    child: Text(
+                                      menuItems[index].text,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'SF Pro',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                            height: 50,
-                            width: 50,
-                            child: Icon(
-                              menuItems[index].icons,
-                              size: 20,
-                              color: menuItems[index].color.shade400,
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        height: ScreenUtil().setHeight(30),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 12, right: 12, top: 15),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: ScreenUtil().setHeight(25),
+                        ),
+                        Center(
+                          child: Container(
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'Cancelar',
+                                style: TextStyle(
+                                  color: HexColor("#0079DE"),
+                                  fontFamily: 'SF Pro',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: ScreenUtil().setSp(16),
+                                ),
+                              ),
                             ),
                           ),
-                          title: Text(menuItems[index].text),
                         ),
-                      );
-                    },
-                  )
-                ],
+                        SizedBox(
+                          height: ScreenUtil().setHeight(25),
+                        ),
+                      ],
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ]),
           );
         });
   }
@@ -470,6 +533,24 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     );
   }
 
+  /* String getMessageDate(String fecha, int index) {
+    String fechaMensaje;
+
+    if (index == 0) {
+      ultimaFecha = fecha;
+      fechaMensaje = fecha;
+    } else {
+      if (ultimaFecha != fecha) {
+        ultimaFecha = fecha;
+        fechaMensaje = fecha;
+      } else {
+        fechaMensaje = null;
+      }
+    }
+    setState(() {});
+    return fechaMensaje;
+  } */
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -528,7 +609,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
     final adm = Provider.of<AdminModel>(context, listen: false);
     groupChatId = "$id-${adm.id}";
-
+    ScrollController _scrollController = new ScrollController();
     return SafeArea(
         child: Scaffold(
             appBar: PreferredSize(
@@ -584,6 +665,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                               ]));
                         } else {
                           listMessage.addAll(snapshot.data.docs);
+
                           return SingleChildScrollView(
                               child: Padding(
                                   padding: EdgeInsets.only(top: 20),
@@ -613,27 +695,54 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                         itemCount: snapshot.data.size,
                                         shrinkWrap: true,
                                         reverse: true,
+                                        controller: _scrollController,
                                         padding: EdgeInsets.only(
                                             top: 10, bottom: 10),
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, index) {
+                                          int ultimo =
+                                              snapshot.data.docs.length - 1;
+                                          String fecha = dayf.format(DateTime
+                                              .fromMicrosecondsSinceEpoch(
+                                                  int.parse(snapshot
+                                                              .data.docs[index]
+                                                              .data()[
+                                                          'timestamp']) *
+                                                      1000));
+                                          String fechaAnterior = index == ultimo
+                                              ? null
+                                              : dayf.format(DateTime
+                                                  .fromMicrosecondsSinceEpoch(
+                                                      int.parse(snapshot.data
+                                                                  .docs[index + 1]
+                                                                  .data()[
+                                                              'timestamp']) *
+                                                          1000));
+                                          //String fechaMensaje =
+                                          //    getMessageDate(fecha, index);
+
                                           return ChatBubble(
-                                            chatMessage: ChatMessage(
-                                              message: snapshot.data.docs[index]
-                                                  .data()['content'],
-                                              timestamp: snapshot
-                                                  .data.docs[index]
-                                                  .data()['timestamp'],
-                                              messageType: snapshot
-                                                  .data.docs[index]
-                                                  .data()['type'],
-                                              type: (id ==
-                                                      snapshot.data.docs[index]
-                                                          .data()['idFrom'])
-                                                  ? MessageType.Sender
-                                                  : MessageType.Receiver,
-                                            ),
-                                          );
+                                              chatMessage: ChatMessage(
+                                                message: snapshot
+                                                    .data.docs[index]
+                                                    .data()['content'],
+                                                timestamp: snapshot
+                                                    .data.docs[index]
+                                                    .data()['timestamp'],
+                                                messageType: snapshot
+                                                    .data.docs[index]
+                                                    .data()['type'],
+                                                type: (id ==
+                                                        snapshot
+                                                            .data.docs[index]
+                                                            .data()['idFrom'])
+                                                    ? MessageType.Sender
+                                                    : MessageType.Receiver,
+                                              ),
+                                              fechaMensaje:
+                                                  fecha != fechaAnterior
+                                                      ? fecha
+                                                      : null);
                                         },
                                       ),
                                       SizedBox(
@@ -692,9 +801,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                         isNew,
                                         groupChatId);
                                     //onSendMessage(term, 1);
-                                    listScrollController.animateTo(0.0,
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.easeOut);
+                                    _scrollController.animateTo(
+                                      0.0,
+                                      curve: Curves.easeOut,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                    );
                                   },
                                   onChanged: (text) {
                                     setState(() {

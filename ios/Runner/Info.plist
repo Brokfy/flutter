@@ -50,5 +50,9 @@
 			<key>NSAllowsArbitraryLoads</key>
 			<true />
 		</dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Brokfy needs to use the camera.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Brokfy needs to use the mic.</string>
 	</dict>
 </plist>

@@ -26,7 +26,7 @@ class ChatAsesorService {
     Reference storageReference;
     var file = new File(path);
     int iFileType;
-    if (fileType == 'image') {
+    if (fileType == 'image' || fileType == 'takeImage') {
       storageReference =
           FirebaseStorage.instance.ref().child("images/$filename");
       iFileType = 2;

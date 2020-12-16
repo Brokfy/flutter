@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../providers/admin_chat_provider.dart';
-import 'package:provider/provider.dart';
-import '../../services/api_service.dart';
 import '../../models/admin_model.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:flutter/services.dart';

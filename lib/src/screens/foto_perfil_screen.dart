@@ -34,10 +34,7 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
 
   _pickImage(ImageSource source) async {
     try {
-      var pickedFile = await _picker.getImage(
-        source: source,
-        maxWidth: 500
-      );
+      var pickedFile = await _picker.getImage(source: source, maxWidth: 500);
       setState(() {
         _imageFile = pickedFile;
       });
@@ -56,12 +53,9 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
             right: ScreenUtil().setWidth(41),
           ),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: new DecorationImage(
-              fit: BoxFit.cover,
-              image: FileImage(File(_imageFile.path))
-            )
-          ),
+              shape: BoxShape.circle,
+              image: new DecorationImage(
+                  fit: BoxFit.cover, image: FileImage(File(_imageFile.path)))),
         ),
       );
     } else {
@@ -73,11 +67,10 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
-              colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              tileMode: TileMode.clamp
-            ),
+                colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                tileMode: TileMode.clamp),
           ),
           margin: EdgeInsets.only(
             top: ScreenUtil().setHeight(121),
@@ -85,10 +78,9 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
             right: ScreenUtil().setWidth(41),
           ),
           child: Container(
-            height: ScreenUtil().setHeight(100),
-            width: ScreenUtil().setHeight(87),
-            child: Image.asset('assets/images/shield.png')
-          ),
+              height: ScreenUtil().setHeight(100),
+              width: ScreenUtil().setHeight(87),
+              child: Image.asset('assets/images/shield.png')),
         ),
       );
     }
@@ -109,92 +101,92 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: HexColor("#F9FAFA"),
-        // appBar: AppBar(
-        //   iconTheme: IconThemeData(
-        //     color: HexColor("#202D39"),
-        //   ),
-        //   backgroundColor: HexColor("#F9FAFA"),
-        //   bottomOpacity: 0.0,
-        //   elevation: 0.0,
-        // ),
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(), 
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 30,),
-
-              Container(
-                margin: EdgeInsets.only(
-                  top: ScreenUtil().setHeight(36),
-                  left: ScreenUtil().setWidth(40),
-                  right: ScreenUtil().setWidth(41),
+          backgroundColor: HexColor("#F9FAFA"),
+          // appBar: AppBar(
+          //   iconTheme: IconThemeData(
+          //     color: HexColor("#202D39"),
+          //   ),
+          //   backgroundColor: HexColor("#F9FAFA"),
+          //   bottomOpacity: 0.0,
+          //   elevation: 0.0,
+          // ),
+          body: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 30,
                 ),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Foto de Perfil',
-                  style: TextStyle(
-                    color: HexColor("#202D39"),
-                    fontFamily: 'SF Pro',
-                    fontSize: ScreenUtil().setSp(30),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
 
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: EdgeInsets.only(
-                  top: ScreenUtil().setHeight(20),
-                  left: ScreenUtil().setWidth(40),
-                  right: ScreenUtil().setWidth(41),
-                ),
-                child: Text(
-                  'Añade una foto de perfil de Brokfy añadiendo desde la cámara o tu galería de fotos.',
-                  style: TextStyle(
-                    fontFamily: 'SF Pro',
-                    fontSize: ScreenUtil().setSp(15),
-                    fontWeight: FontWeight.w400
-                  )
-                ),
-              ),
-
-              _previewImage(),
-
-              // Container(
-              //   alignment: Alignment.center,
-              //   margin: EdgeInsets.only(
-              //     top: ScreenUtil().setHeight(36),
-              //     left: ScreenUtil().setWidth(40),
-              //     right: ScreenUtil().setWidth(41),
-              //   ),
-              //   child: RichText(
-              //     text: TextSpan(
-              //       text: 'Cambiar foto de perfil',
-              //       style: TextStyle(
-              //         color: HexColor("#0079DE"),
-              //         fontFamily: 'Quicksand', 
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: ScreenUtil().setSp(15),
-              //       ),
-              //       recognizer: TapGestureRecognizer()
-              //         ..onTap = ,
-              //     ),
-              //   ),
-              // ),
-
-              Center(
-                child: Container(
+                Container(
                   margin: EdgeInsets.only(
                     top: ScreenUtil().setHeight(36),
                     left: ScreenUtil().setWidth(40),
                     right: ScreenUtil().setWidth(41),
                   ),
-                  height: ScreenUtil().setHeight(70),
-                  width: ScreenUtil().setWidth(220),
-                  child: GestureDetector(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Foto de Perfil',
+                    style: TextStyle(
+                      color: HexColor("#202D39"),
+                      fontFamily: 'SF Pro',
+                      fontSize: ScreenUtil().setSp(30),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.only(
+                    top: ScreenUtil().setHeight(20),
+                    left: ScreenUtil().setWidth(40),
+                    right: ScreenUtil().setWidth(41),
+                  ),
+                  child: Text(
+                      'Añade una foto de perfil de Brokfy añadiendo desde la cámara o tu galería de fotos.',
+                      style: TextStyle(
+                          fontFamily: 'SF Pro',
+                          fontSize: ScreenUtil().setSp(15),
+                          fontWeight: FontWeight.w400)),
+                ),
+
+                _previewImage(),
+
+                // Container(
+                //   alignment: Alignment.center,
+                //   margin: EdgeInsets.only(
+                //     top: ScreenUtil().setHeight(36),
+                //     left: ScreenUtil().setWidth(40),
+                //     right: ScreenUtil().setWidth(41),
+                //   ),
+                //   child: RichText(
+                //     text: TextSpan(
+                //       text: 'Cambiar foto de perfil',
+                //       style: TextStyle(
+                //         color: HexColor("#0079DE"),
+                //         fontFamily: 'Quicksand',
+                //         fontWeight: FontWeight.bold,
+                //         fontSize: ScreenUtil().setSp(15),
+                //       ),
+                //       recognizer: TapGestureRecognizer()
+                //         ..onTap = ,
+                //     ),
+                //   ),
+                // ),
+
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: ScreenUtil().setHeight(36),
+                      left: ScreenUtil().setWidth(40),
+                      right: ScreenUtil().setWidth(41),
+                    ),
+                    height: ScreenUtil().setHeight(70),
+                    width: ScreenUtil().setWidth(220),
+                    child: GestureDetector(
                       onTap: () async {
                         FocusScope.of(context).unfocus();
                         // var navigator = Navigator.of(context);
@@ -203,210 +195,307 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
                         // navigator.pushReplacementNamed("login");
 
                         showModalBottomSheet(
-                          context: context, 
-                          builder: (context) {
-                            return Container(
-                              color: Color(0xFF737373),
-                              height: ScreenUtil().setHeight(376),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: ListView(
-                                  children: [
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(height: ScreenUtil().setHeight(30),),
-
-                                          Text(
-                                            'Seleccionar foto de perfíl',
-                                            style: TextStyle(
-                                              color: Color(0xFF8F8F8F),
-                                              fontFamily: 'SF Pro',
-                                              fontSize: ScreenUtil().setSp(15),
-                                              fontWeight: FontWeight.bold
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                color: Color(0xFF737373),
+                                height: ScreenUtil().setHeight(376),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: ListView(
+                                    children: [
+                                      Container(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height:
+                                                  ScreenUtil().setHeight(30),
                                             ),
-                                          ),
-
-                                          SizedBox(height: ScreenUtil().setHeight(21),),
-
-                                          Container(
-                                            height: ScreenUtil().setHeight(60),
-                                            margin: EdgeInsets.only(
-                                              left: ScreenUtil().setWidth(41),
-                                              right: ScreenUtil().setWidth(41),
-                                              top: ScreenUtil().setHeight(10),
+                                            Text(
+                                              'Seleccionar foto de perfíl',
+                                              style: TextStyle(
+                                                  color: Color(0xFF8F8F8F),
+                                                  fontFamily: 'SF Pro',
+                                                  fontSize:
+                                                      ScreenUtil().setSp(15),
+                                                  fontWeight: FontWeight.bold),
                                             ),
-                                            decoration: running ? null : BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: HexColor("#0079DE").withOpacity(0.5),
-                                                  spreadRadius: 0,
-                                                  blurRadius: ScreenUtil().setHeight(9),
-                                                  offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
-                                                ),
-                                              ],
+                                            SizedBox(
+                                              height:
+                                                  ScreenUtil().setHeight(21),
                                             ),
-                                            child: RaisedButton(
-                                              onPressed: running ? null : () async {
-                                                Navigator.of(context).pop('Camara');
-                                                _pickImage(ImageSource.camera);
-                                              },
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                                              splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-                                              disabledColor: HexColor("#C4C4C4"),
-                                              textColor: Colors.white,
-                                              disabledTextColor: Colors.white,
-                                              padding: EdgeInsets.all(0.0),
-                                              child: Ink(
-                                                decoration: running ? null : BoxDecoration(
-                                                  color: HexColor("#C4C4C4"),
-                                                  gradient: LinearGradient(
-                                                    colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                  ),
-                                                  borderRadius: BorderRadius.circular(5.0)
-                                                ),
-                                                child: Container(
-                                                  // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
-                                                  alignment: Alignment.center,
-                                                  child: running ? 
-                                                    Procesando() : 
-                                                    Text(
-                                                      "Cámara",
-                                                      style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(15), 
-                                                        fontWeight: FontWeight.bold
-                                                      ),
-                                                    ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          Container(
-                                            height: ScreenUtil().setHeight(60),
-                                            margin: EdgeInsets.only(
-                                              left: ScreenUtil().setWidth(41),
-                                              right: ScreenUtil().setWidth(41),
-                                              top: ScreenUtil().setHeight(25),
-                                            ),
-                                            decoration: running ? null : BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: HexColor("#0079DE").withOpacity(0.5),
-                                                  spreadRadius: 0,
-                                                  blurRadius: ScreenUtil().setHeight(9),
-                                                  offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
-                                                ),
-                                              ],
-                                            ),
-                                            child: RaisedButton(
-                                              onPressed: running ? null : () async {
-                                                Navigator.of(context).pop('Galeria');
-                                                _pickImage(ImageSource.gallery);
-                                              },
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                                              splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-                                              disabledColor: HexColor("#C4C4C4"),
-                                              textColor: Colors.white,
-                                              disabledTextColor: Colors.white,
-                                              padding: EdgeInsets.all(0.0),
-                                              child: Ink(
-                                                decoration: running ? null : BoxDecoration(
-                                                  color: HexColor("#C4C4C4"),
-                                                  gradient: LinearGradient(
-                                                    colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                  ),
-                                                  borderRadius: BorderRadius.circular(5.0)
-                                                ),
-                                                child: Container(
-                                                  // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
-                                                  alignment: Alignment.center,
-                                                  child: running ? 
-                                                    Procesando() : 
-                                                    Text(
-                                                      "Galería de Fotos",
-                                                      style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(15), 
-                                                        fontWeight: FontWeight.bold
-                                                      ),
-                                                    ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          SizedBox(height: ScreenUtil().setHeight(30),),
-                                          
-                                        ],
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).canvasColor,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          topRight: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          bottomLeft: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          bottomRight: Radius.circular( ScreenUtil().setWidth(20) ),
-                                        )
-                                      ),
-                                    ),
-
-                                    SizedBox(height: ScreenUtil().setHeight(10),),
-                                    
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Center(
-                                            child: Container(
+                                            Container(
+                                              height:
+                                                  ScreenUtil().setHeight(60),
                                               margin: EdgeInsets.only(
-                                                top: ScreenUtil().setHeight(33),
+                                                left: ScreenUtil().setWidth(41),
+                                                right:
+                                                    ScreenUtil().setWidth(41),
+                                                top: ScreenUtil().setHeight(10),
                                               ),
-                                              child: RichText(
-                                                text: TextSpan(
-                                                  text: 'Cancelar',
-                                                  style: TextStyle(
-                                                    color: HexColor("#0079DE"),
-                                                    fontFamily: 'SF Pro', 
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: ScreenUtil().setSp(16),
+                                              decoration: running
+                                                  ? null
+                                                  : BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: HexColor(
+                                                                  "#0079DE")
+                                                              .withOpacity(0.5),
+                                                          spreadRadius: 0,
+                                                          blurRadius:
+                                                              ScreenUtil()
+                                                                  .setHeight(9),
+                                                          offset: Offset(
+                                                              0,
+                                                              ScreenUtil()
+                                                                  .setHeight(
+                                                                      3)), // changes position of shadow
+                                                        ),
+                                                      ],
+                                                    ),
+                                              child: RaisedButton(
+                                                onPressed: running
+                                                    ? null
+                                                    : () async {
+                                                        Navigator.of(context)
+                                                            .pop('Camara');
+                                                        _pickImage(
+                                                            ImageSource.camera);
+                                                      },
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0)),
+                                                splashColor: Color.fromRGBO(
+                                                    255, 255, 255, 0.2),
+                                                disabledColor:
+                                                    HexColor("#C4C4C4"),
+                                                textColor: Colors.white,
+                                                disabledTextColor: Colors.white,
+                                                padding: EdgeInsets.all(0.0),
+                                                child: Ink(
+                                                  decoration: running
+                                                      ? null
+                                                      : BoxDecoration(
+                                                          color: HexColor(
+                                                              "#C4C4C4"),
+                                                          gradient:
+                                                              LinearGradient(
+                                                            colors: [
+                                                              HexColor(
+                                                                  "#1F92F3"),
+                                                              HexColor(
+                                                                  "#0079DE")
+                                                            ],
+                                                            begin: Alignment
+                                                                .topCenter,
+                                                            end: Alignment
+                                                                .bottomCenter,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      5.0)),
+                                                  child: Container(
+                                                    // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+                                                    alignment: Alignment.center,
+                                                    child: running
+                                                        ? Procesando()
+                                                        : Text(
+                                                            "Cámara",
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    ScreenUtil()
+                                                                        .setSp(
+                                                                            15),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
                                                   ),
-                                                  recognizer: TapGestureRecognizer()..onTap = () {
-                                                    Navigator.of(context).pop();
-                                                  },
                                                 ),
                                               ),
                                             ),
-                                          ),
-
-                                          SizedBox(height: ScreenUtil().setHeight(30),),
-                                          
-                                        ],
+                                            Container(
+                                              height:
+                                                  ScreenUtil().setHeight(60),
+                                              margin: EdgeInsets.only(
+                                                left: ScreenUtil().setWidth(41),
+                                                right:
+                                                    ScreenUtil().setWidth(41),
+                                                top: ScreenUtil().setHeight(25),
+                                              ),
+                                              decoration: running
+                                                  ? null
+                                                  : BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: HexColor(
+                                                                  "#0079DE")
+                                                              .withOpacity(0.5),
+                                                          spreadRadius: 0,
+                                                          blurRadius:
+                                                              ScreenUtil()
+                                                                  .setHeight(9),
+                                                          offset: Offset(
+                                                              0,
+                                                              ScreenUtil()
+                                                                  .setHeight(
+                                                                      3)), // changes position of shadow
+                                                        ),
+                                                      ],
+                                                    ),
+                                              child: RaisedButton(
+                                                onPressed: running
+                                                    ? null
+                                                    : () async {
+                                                        Navigator.of(context)
+                                                            .pop('Galeria');
+                                                        _pickImage(ImageSource
+                                                            .gallery);
+                                                      },
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0)),
+                                                splashColor: Color.fromRGBO(
+                                                    255, 255, 255, 0.2),
+                                                disabledColor:
+                                                    HexColor("#C4C4C4"),
+                                                textColor: Colors.white,
+                                                disabledTextColor: Colors.white,
+                                                padding: EdgeInsets.all(0.0),
+                                                child: Ink(
+                                                  decoration: running
+                                                      ? null
+                                                      : BoxDecoration(
+                                                          color: HexColor(
+                                                              "#C4C4C4"),
+                                                          gradient:
+                                                              LinearGradient(
+                                                            colors: [
+                                                              HexColor(
+                                                                  "#1F92F3"),
+                                                              HexColor(
+                                                                  "#0079DE")
+                                                            ],
+                                                            begin: Alignment
+                                                                .topCenter,
+                                                            end: Alignment
+                                                                .bottomCenter,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      5.0)),
+                                                  child: Container(
+                                                    // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+                                                    alignment: Alignment.center,
+                                                    child: running
+                                                        ? Procesando()
+                                                        : Text(
+                                                            "Galería de Fotos",
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    ScreenUtil()
+                                                                        .setSp(
+                                                                            15),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height:
+                                                  ScreenUtil().setHeight(30),
+                                            ),
+                                          ],
+                                        ),
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).canvasColor,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              topRight: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              bottomLeft: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              bottomRight: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                            )),
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).canvasColor,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          topRight: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          bottomLeft: Radius.circular( ScreenUtil().setWidth(20) ),
-                                          bottomRight: Radius.circular( ScreenUtil().setWidth(20) ),
-                                        )
+                                      SizedBox(
+                                        height: ScreenUtil().setHeight(10),
                                       ),
-                                    ),
-                                  ],
+                                      Container(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Center(
+                                              child: Container(
+                                                margin: EdgeInsets.only(
+                                                  top: ScreenUtil()
+                                                      .setHeight(33),
+                                                ),
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    text: 'Cancelar',
+                                                    style: TextStyle(
+                                                      color:
+                                                          HexColor("#0079DE"),
+                                                      fontFamily: 'SF Pro',
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: ScreenUtil()
+                                                          .setSp(16),
+                                                    ),
+                                                    recognizer:
+                                                        TapGestureRecognizer()
+                                                          ..onTap = () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height:
+                                                  ScreenUtil().setHeight(30),
+                                            ),
+                                          ],
+                                        ),
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).canvasColor,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              topRight: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              bottomLeft: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                              bottomRight: Radius.circular(
+                                                  ScreenUtil().setWidth(20)),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        );
-
-                        
+                              );
+                            });
 
                         // final act = CupertinoActionSheet(
                         //   title: Text(
@@ -454,289 +543,306 @@ class _FotoPerfilScreenState extends State<FotoPerfilScreen> {
                         // );
                       },
                       child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color(0xFF0079DE),
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                              ),
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(10.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Color(0xFF0079DE),
+                            style: BorderStyle.solid,
+                            width: 1.0,
                           ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                  Center(
-                                      child: Text(
-                                        "Cambiar foto de perfil",
-                                          style: TextStyle(
-                                              color: Color(0xFF0079DE),
-                                              fontFamily: 'SF Pro',
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1,
-                                          ),
-                                      ),
-                                  )
-                              ],
-                          ),
-                      ),
-                  ),
-                ),
-              ),
-
-              Container(
-                height: ScreenUtil().setHeight(60),
-                margin: EdgeInsets.only(
-                  left: ScreenUtil().setWidth(40),
-                  right: ScreenUtil().setWidth(41),
-                  top: ScreenUtil().setHeight(130),
-                ),
-                decoration: running ? null : BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: HexColor("#0079DE").withOpacity(0.5),
-                      spreadRadius: 0,
-                      blurRadius: ScreenUtil().setHeight(9),
-                      offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: RaisedButton(
-                  onPressed: running ? null : () async {
-                    FocusScope.of(context).unfocus();
-
-                    setState(() {
-                      running = true;
-                    });
-                    
-                    await ApiService.actualizarImagenPerfil(nuevoUsuario.telefono, File(_imageFile.path));
-                    
-                    setState(() {
-                      running = false;
-                    });
-
-                    await Future.delayed(Duration(milliseconds: 50));
-
-                    var navigator = Navigator.of(context);
-                    var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
-                    navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
-                    navigator.pushReplacementNamed("login");
-                  },
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                  splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-                  disabledColor: HexColor("#C4C4C4"),
-                  textColor: Colors.white,
-                  disabledTextColor: Colors.white,
-                  padding: EdgeInsets.all(0.0),
-                  child: Ink(
-                    decoration: running ? null : BoxDecoration(
-                      color: HexColor("#C4C4C4"),
-                      gradient: LinearGradient(
-                        colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0)
-                    ),
-                    child: Container(
-                      // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
-                      alignment: Alignment.center,
-                      child: running ? 
-                        Procesando() : 
-                        Text(
-                          "Continuar",
-                          style: TextStyle(
-                            fontSize: ScreenUtil().setSp(15), 
-                            fontWeight: FontWeight.bold
-                          ),
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Center(
+                              child: Text(
+                                "Cambiar foto de perfil",
+                                style: TextStyle(
+                                  color: Color(0xFF0079DE),
+                                  fontFamily: 'SF Pro',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              Center(
-                child: Container(
+                Container(
+                  height: ScreenUtil().setHeight(60),
                   margin: EdgeInsets.only(
-                    top: ScreenUtil().setHeight(33),
+                    left: ScreenUtil().setWidth(40),
+                    right: ScreenUtil().setWidth(41),
+                    top: ScreenUtil().setHeight(130),
                   ),
-                  child: RichText(
-                    text: TextSpan(
-                      text: 'Omitir',
-                      style: TextStyle(
-                        color: HexColor("#0079DE"),
-                        fontFamily: 'Quicksand', 
-                        fontWeight: FontWeight.bold,
-                        fontSize: ScreenUtil().setSp(15),
-                      ),
-                      recognizer: TapGestureRecognizer()
-                          ..onTap = () {
+                  decoration: running
+                      ? null
+                      : BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: HexColor("#0079DE").withOpacity(0.5),
+                              spreadRadius: 0,
+                              blurRadius: ScreenUtil().setHeight(9),
+                              offset: Offset(
+                                  0,
+                                  ScreenUtil().setHeight(
+                                      3)), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                  child: RaisedButton(
+                    onPressed: running
+                        ? null
+                        : () async {
                             FocusScope.of(context).unfocus();
-                            
+
+                            setState(() {
+                              running = true;
+                            });
+
+                            await ApiService.actualizarImagenPerfil(
+                                nuevoUsuario.telefono, File(_imageFile.path));
+
+                            setState(() {
+                              running = false;
+                            });
+
+                            await Future.delayed(Duration(milliseconds: 50));
+
                             var navigator = Navigator.of(context);
-                            var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
-                            navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
+                            var route = MaterialPageRoute(
+                                builder: ((BuildContext context) =>
+                                    LoginScreen()));
+                            navigator.pushAndRemoveUntil(
+                                route, (Route<dynamic> route) => route.isFirst);
                             navigator.pushReplacementNamed("login");
                           },
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                    splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+                    disabledColor: HexColor("#C4C4C4"),
+                    textColor: Colors.white,
+                    disabledTextColor: Colors.white,
+                    padding: EdgeInsets.all(0.0),
+                    child: Ink(
+                      decoration: running
+                          ? null
+                          : BoxDecoration(
+                              color: HexColor("#C4C4C4"),
+                              gradient: LinearGradient(
+                                colors: [
+                                  HexColor("#1F92F3"),
+                                  HexColor("#0079DE")
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(5.0)),
+                      child: Container(
+                        // constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+                        alignment: Alignment.center,
+                        child: running
+                            ? Procesando()
+                            : Text(
+                                "Continuar",
+                                style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(15),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          
-          // child: Row(
-          //   children: [
-          //     Expanded(flex: 1, child: Container()),
-          //     Expanded(flex: 8, child: Container(
-          //       padding: EdgeInsets.only(top: ScreenUtil().setHeight(20)),
-          //       height: MediaQuery.of(context).size.height,
-          //       child: Column(
-          //         children: [
-          //           Container(
-          //             alignment: Alignment.centerLeft,
-          //             child: Text(
-          //               'Foto de Perfil',
-          //               style: TextStyle(
-          //                 fontSize: ScreenUtil().setSp(30), 
-          //                 fontWeight: FontWeight.bold,
-          //                 color: HexColor("#202D39")
-          //               )
-          //             ),
-          //           ),
 
-          //           Container(
-          //             alignment: Alignment.centerLeft,
-          //             margin: EdgeInsets.only(
-          //               top: ScreenUtil().setHeight(20),
-          //             ),
-          //             child: Text(
-          //               'Añade una foto de perfil de Brokfy añadiendo desde la cámara o tu galería de fotos.',
-          //               style: TextStyle(
-          //                 fontSize: ScreenUtil().setSp(15),
-          //                 fontWeight: FontWeight.w400
-          //               )
-          //             ),
-          //           ),
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: ScreenUtil().setHeight(33),
+                    ),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Omitir',
+                        style: TextStyle(
+                          color: HexColor("#0079DE"),
+                          fontFamily: 'Quicksand',
+                          fontWeight: FontWeight.bold,
+                          fontSize: ScreenUtil().setSp(15),
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            FocusScope.of(context).unfocus();
 
-          //           Container(
-          //             height: ScreenUtil().setHeight(160),
-          //             width: ScreenUtil().setWidth(160),
-          //             margin: EdgeInsets.only(
-          //               top: ScreenUtil().setHeight(121),
-          //             ),
-          //             child: Placeholder(),
-          //           ),
+                            var navigator = Navigator.of(context);
+                            var route = MaterialPageRoute(
+                                builder: ((BuildContext context) =>
+                                    LoginScreen()));
+                            navigator.pushAndRemoveUntil(
+                                route, (Route<dynamic> route) => route.isFirst);
+                            navigator.pushReplacementNamed("login");
+                          },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-          //           Container(
-          //             margin: EdgeInsets.only(
-          //               top: ScreenUtil().setHeight(36),
-          //             ),
-          //             child: RichText(
-          //               text: TextSpan(
-          //                 text: 'Cambiar foto  de perfil',
-          //                 style: TextStyle(
-          //                   color: HexColor("#0079DE"),
-          //                   fontFamily: 'Quicksand', 
-          //                   fontWeight: FontWeight.bold,
-          //                   fontSize: ScreenUtil().setSp(15),
-          //                 ),
-          //                 recognizer: TapGestureRecognizer()
-          //                     ..onTap = () {
-          //                       FocusScope.of(context).unfocus();
-          //                       var navigator = Navigator.of(context);
-          //                       var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
-          //                       navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
-          //                       navigator.pushReplacementNamed("login");
-          //                     },
-          //               ),
-          //             ),
-          //           ),
+            // child: Row(
+            //   children: [
+            //     Expanded(flex: 1, child: Container()),
+            //     Expanded(flex: 8, child: Container(
+            //       padding: EdgeInsets.only(top: ScreenUtil().setHeight(20)),
+            //       height: MediaQuery.of(context).size.height,
+            //       child: Column(
+            //         children: [
+            //           Container(
+            //             alignment: Alignment.centerLeft,
+            //             child: Text(
+            //               'Foto de Perfil',
+            //               style: TextStyle(
+            //                 fontSize: ScreenUtil().setSp(30),
+            //                 fontWeight: FontWeight.bold,
+            //                 color: HexColor("#202D39")
+            //               )
+            //             ),
+            //           ),
 
-          //           Container(
-          //             height: ScreenUtil().setHeight(48),
-          //             margin: EdgeInsets.only(
-          //               top: ScreenUtil().setHeight(168),
-          //             ),
-          //             decoration: BoxDecoration(
-          //               boxShadow: [
-          //                 BoxShadow(
-          //                   color: HexColor("#0079DE").withOpacity(0.5),
-          //                   spreadRadius: 0,
-          //                   blurRadius: ScreenUtil().setHeight(9),
-          //                   offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
-          //                 ),
-          //               ],
-          //             ),
-          //             child: RaisedButton(
-          //               onPressed: () {
-          //                 FocusScope.of(context).unfocus();
-          //                 var navigator = Navigator.of(context);
-          //                 var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
-          //                 navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
-          //                 navigator.pushReplacementNamed("login");
-          //               },
-          //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          //               splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-          //               disabledColor: HexColor("#C4C4C4"),
-          //               textColor: Colors.white,
-          //               disabledTextColor: Colors.white,
-          //               padding: EdgeInsets.all(0.0),
-          //               child: Ink(
-          //                 decoration: BoxDecoration(
-          //                   color: HexColor("#C4C4C4"),
-          //                   gradient: LinearGradient(
-          //                     colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-          //                     begin: Alignment.topCenter,
-          //                     end: Alignment.bottomCenter,
-          //                   ),
-          //                   borderRadius: BorderRadius.circular(5.0)
-          //                 ),
-          //                 child: Container(
-          //                   constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
-          //                   alignment: Alignment.center,
-          //                   child: Text(
-          //                     "CONTINUAR",
-          //                     style: TextStyle(
-          //                       fontSize: ScreenUtil().setSp(15), 
-          //                       fontWeight: FontWeight.bold
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
+            //           Container(
+            //             alignment: Alignment.centerLeft,
+            //             margin: EdgeInsets.only(
+            //               top: ScreenUtil().setHeight(20),
+            //             ),
+            //             child: Text(
+            //               'Añade una foto de perfil de Brokfy añadiendo desde la cámara o tu galería de fotos.',
+            //               style: TextStyle(
+            //                 fontSize: ScreenUtil().setSp(15),
+            //                 fontWeight: FontWeight.w400
+            //               )
+            //             ),
+            //           ),
 
-          //           Container(
-          //             margin: EdgeInsets.only(
-          //               top: ScreenUtil().setHeight(33),
-          //             ),
-          //             child: RichText(
-          //               text: TextSpan(
-          //                 text: 'OMITIR',
-          //                 style: TextStyle(
-          //                   color: HexColor("#0079DE"),
-          //                   fontFamily: 'Quicksand', 
-          //                   fontWeight: FontWeight.bold,
-          //                   fontSize: ScreenUtil().setSp(15),
-          //                 ),
-          //                 recognizer: TapGestureRecognizer()
-          //                     ..onTap = () {
-          //                       FocusScope.of(context).unfocus();
-          //                       Navigator.pushNamed(context, 'recuperar');
-          //                     },
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       )
-          //     )),
-          //     Expanded(flex: 1, child: Container()),
-          //   ]
-          // )
-        )
-      ),
+            //           Container(
+            //             height: ScreenUtil().setHeight(160),
+            //             width: ScreenUtil().setWidth(160),
+            //             margin: EdgeInsets.only(
+            //               top: ScreenUtil().setHeight(121),
+            //             ),
+            //             child: Placeholder(),
+            //           ),
+
+            //           Container(
+            //             margin: EdgeInsets.only(
+            //               top: ScreenUtil().setHeight(36),
+            //             ),
+            //             child: RichText(
+            //               text: TextSpan(
+            //                 text: 'Cambiar foto  de perfil',
+            //                 style: TextStyle(
+            //                   color: HexColor("#0079DE"),
+            //                   fontFamily: 'Quicksand',
+            //                   fontWeight: FontWeight.bold,
+            //                   fontSize: ScreenUtil().setSp(15),
+            //                 ),
+            //                 recognizer: TapGestureRecognizer()
+            //                     ..onTap = () {
+            //                       FocusScope.of(context).unfocus();
+            //                       var navigator = Navigator.of(context);
+            //                       var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
+            //                       navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
+            //                       navigator.pushReplacementNamed("login");
+            //                     },
+            //               ),
+            //             ),
+            //           ),
+
+            //           Container(
+            //             height: ScreenUtil().setHeight(48),
+            //             margin: EdgeInsets.only(
+            //               top: ScreenUtil().setHeight(168),
+            //             ),
+            //             decoration: BoxDecoration(
+            //               boxShadow: [
+            //                 BoxShadow(
+            //                   color: HexColor("#0079DE").withOpacity(0.5),
+            //                   spreadRadius: 0,
+            //                   blurRadius: ScreenUtil().setHeight(9),
+            //                   offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+            //                 ),
+            //               ],
+            //             ),
+            //             child: RaisedButton(
+            //               onPressed: () {
+            //                 FocusScope.of(context).unfocus();
+            //                 var navigator = Navigator.of(context);
+            //                 var route = MaterialPageRoute(builder: ((BuildContext context) => LoginScreen()));
+            //                 navigator.pushAndRemoveUntil(route, (Route<dynamic> route) => route.isFirst);
+            //                 navigator.pushReplacementNamed("login");
+            //               },
+            //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            //               splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+            //               disabledColor: HexColor("#C4C4C4"),
+            //               textColor: Colors.white,
+            //               disabledTextColor: Colors.white,
+            //               padding: EdgeInsets.all(0.0),
+            //               child: Ink(
+            //                 decoration: BoxDecoration(
+            //                   color: HexColor("#C4C4C4"),
+            //                   gradient: LinearGradient(
+            //                     colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+            //                     begin: Alignment.topCenter,
+            //                     end: Alignment.bottomCenter,
+            //                   ),
+            //                   borderRadius: BorderRadius.circular(5.0)
+            //                 ),
+            //                 child: Container(
+            //                   constraints: BoxConstraints(maxWidth: 300.0, minHeight: 50.0),
+            //                   alignment: Alignment.center,
+            //                   child: Text(
+            //                     "CONTINUAR",
+            //                     style: TextStyle(
+            //                       fontSize: ScreenUtil().setSp(15),
+            //                       fontWeight: FontWeight.bold
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+
+            //           Container(
+            //             margin: EdgeInsets.only(
+            //               top: ScreenUtil().setHeight(33),
+            //             ),
+            //             child: RichText(
+            //               text: TextSpan(
+            //                 text: 'OMITIR',
+            //                 style: TextStyle(
+            //                   color: HexColor("#0079DE"),
+            //                   fontFamily: 'Quicksand',
+            //                   fontWeight: FontWeight.bold,
+            //                   fontSize: ScreenUtil().setSp(15),
+            //                 ),
+            //                 recognizer: TapGestureRecognizer()
+            //                     ..onTap = () {
+            //                       FocusScope.of(context).unfocus();
+            //                       Navigator.pushNamed(context, 'recuperar');
+            //                     },
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       )
+            //     )),
+            //     Expanded(flex: 1, child: Container()),
+            //   ]
+            // )
+          )),
     );
   }
 }
