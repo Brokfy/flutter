@@ -27,6 +27,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:brokfy_app/src/widgets/hex_color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore.dart';
 import 'package:image_picker/image_picker.dart'; // For Image Picker
@@ -82,7 +83,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   void initState() {
     super.initState();
     getUserInfo();
-
+    Firebase.initializeApp().whenComplete(() {
+      print("completed");
+      setState(() {});
+    });
     listScrollController.addListener(_scrollListener);
 
     isLoading = false;
