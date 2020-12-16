@@ -35,18 +35,24 @@ class Opcione {
         this.opcion,
         this.endpoint,
         this.valor,
+        this.action,
+        this.url
     });
 
     int id;
     String opcion;
     String endpoint;
     String valor;
+    String url;
+    int action;
 
     factory Opcione.fromJson(Map<String, dynamic> json) => Opcione(
         id: json["id"],
         opcion: json["opcion"],
         endpoint: json["endpoint"] == null ? null : json["endpoint"],
         valor: json["valor"] == null ? null : json["valor"],
+        action: json["action"] == null ? null : json["action"],
+        url: json["url"] == null ? null : json["url"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -54,6 +60,8 @@ class Opcione {
         "opcion": opcion,
         "endpoint": endpoint == null ? null : endpoint,
         "valor": valor == null ? null : valor,
+        "action": action == null ? null : action,
+        "url": url == null ? null : url,
     };
 }
 

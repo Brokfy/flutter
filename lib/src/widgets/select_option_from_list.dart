@@ -12,6 +12,7 @@ class SelectOptionFromList extends StatefulWidget {
   final bool hideSearch;
   final String title;
   final String field;
+  final bool multiple;
 
   /// elements passed as favorite
   final List<dynamic> favoriteElements;
@@ -27,7 +28,8 @@ class SelectOptionFromList extends StatefulWidget {
     this.size,
     this.hideSearch = false,
     this.title,
-    this.field
+    this.field,
+    this.multiple = false,
   })  : assert(searchDecoration != null, 'searchDecoration must not be null!'),
         this.searchDecoration =
             searchDecoration.copyWith(prefixIcon: Icon(Icons.search)),
@@ -40,6 +42,7 @@ class SelectOptionFromList extends StatefulWidget {
 class _SelectOptionFromListState extends State<SelectOptionFromList> {
   /// this is useful for filtering purpose
   List<dynamic> filteredElements;
+  var selecciones = [];
 
   @override
   Widget build(BuildContext context) {
@@ -81,18 +84,10 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
 
+            if (!widget.multiple)
             Divider(height: 8,),
 
-            if (!widget.hideSearch)
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 24),
-              //   child: TextField(
-              //     style: widget.searchStyle,
-              //     decoration: widget.searchDecoration,
-              //     onChanged: _filterElements,
-              //   ),
-              // ),
-              
+            if (!widget.hideSearch && !widget.multiple)
               Container(
                 height: 40,
                 // color: Colors.red,
@@ -112,53 +107,232 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
                 ),
               ),
 
-            Divider(height: 8,),
+            if (!widget.hideSearch && !widget.multiple)
+              Divider(height: 8,),
 
 
+            if (!widget.multiple) 
+              Expanded(
+                child: Container(
+                  color: Color(0xFFFCFBFF),
+                  width: widget.size?.width ?? MediaQuery.of(context).size.width,
+                  height: widget.size?.height ?? MediaQuery.of(context).size.height,
+                  child: ListView(
+                    children: 
+                    ListTile.divideTiles(
+                      context: context,
+                      tiles: 
+                      [
+                        if (filteredElements.isEmpty)
+                          _buildEmptySearchWidget(context)
+                        else
+                          ...filteredElements.map(
+                            (e) => SimpleDialogOption(
+                              key: Key(_toMap(e)[widget.field].toString()),
+                              child: _buildOption(e),
+                              onPressed: () {
+                                _selectItem(e);
+                              },
+                            ),
+                          ),
+                      ],
+                    ).toList()
+                  ),
+                ),
+              ),
+
+            if (widget.multiple) 
             Expanded(
               child: Container(
+                padding: EdgeInsets.only(
+                  top: ScreenUtil().setWidth(32),
+                  left: ScreenUtil().setWidth(42),
+                ),
                 color: Color(0xFFFCFBFF),
                 width: widget.size?.width ?? MediaQuery.of(context).size.width,
                 height: widget.size?.height ?? MediaQuery.of(context).size.height,
-                child: ListView(
-                  children: 
-                  ListTile.divideTiles(
-                    context: context,
-                    tiles: 
-                    [
-                      // widget.favoriteElements.isEmpty
-                      //     ? const DecoratedBox(decoration: BoxDecoration())
-                      //     : Column(
-                      //         crossAxisAlignment: CrossAxisAlignment.start,
-                      //         children: [
-                      //           ...widget.favoriteElements.map(
-                      //             (f) => SimpleDialogOption(
-                      //               child: _buildOption(f),
-                      //               onPressed: () {
-                      //                 _selectItem(f);
-                      //               },
-                      //             ),
-                      //           ),
-                      //           const Divider(),
-                      //         ],
-                      //       ),
-                      if (filteredElements.isEmpty)
-                        _buildEmptySearchWidget(context)
-                      else
-                        ...filteredElements.map(
-                          (e) => SimpleDialogOption(
-                            key: Key(_toMap(e)[widget.field].toString()),
-                            child: _buildOption(e),
-                            onPressed: () {
-                              _selectItem(e);
-                            },
-                          ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(right: ScreenUtil().setWidth(42),),
+                      child: Text(
+                        'Porfavor selecciona la(s) medidas de seguridad con las que cuenta tu vivienda,  en caso de no tener ninguna selecciona “ninguna de las anteriores”.',
+                        style: TextStyle(
+                          color: Color(0xFF5A666F),
+                          fontWeight: FontWeight.w500,
+                          fontSize: ScreenUtil().setSp(15),
+                          fontFamily: 'SF Pro', 
                         ),
-                    ],
-                  ).toList()
+                      ),
+                    ),
+
+                    SizedBox(height: ScreenUtil().setHeight(32),),
+
+                    Expanded(
+                      child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: widget.elements.length, 
+                        itemBuilder: (BuildContext context,int index) { 
+
+                          seleccionarItem() {
+                            var item = widget.elements[index];
+                            var idSeleccionado = item.id;
+                            if( selecciones.length == 0 ) {
+                              selecciones.add(widget.elements[index]);
+                            } else {
+                              if ( selecciones.where((element) => element.id == idSeleccionado).isNotEmpty ) {
+                                selecciones.removeWhere((element) => element.id == idSeleccionado);
+                              } else {
+                                selecciones.add(widget.elements[index]);
+                              }
+                            }
+                            setState(() {});
+                          }
+
+                          return ListTile( 
+                            dense: true,
+                            title: Wrap(
+                              children: [
+                                SizedBox(height: 8,), 
+
+                                InkWell(
+                                  onTap: () => seleccionarItem(),
+                                  child: Container(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          height: 20,
+                                          child: Checkbox(
+                                            value: selecciones.where((element) => element.id == widget.elements[index].id).isNotEmpty,
+                                            onChanged: (value) => seleccionarItem(),   
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            _toMap(widget.elements[index])[widget.field],
+                                            style: TextStyle(
+                                              color: Color(0xFF5A666F),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: ScreenUtil().setSp(15),
+                                              fontFamily: 'SF Pro', 
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  height: 2.0,
+                                  margin: EdgeInsets.only(
+                                    top: 12
+                                  ),
+                                  color: Color(0xFFDBE6F0),
+                                  // child: Divider(, )
+                                ),
+                                SizedBox(height: 8,), 
+                              ],
+                            )
+                          ); 
+                        } 
+                      ),
+                    ), 
+
+                  ],
+                ),
+              )
+            ),
+
+
+    if( widget.multiple )
+     Container(
+       decoration: BoxDecoration(
+         color: Color(0xFFFFFFFF),
+         border: Border(
+           top: BorderSide(
+              color: Color(0xFFDBE6F0),
+              width: 1
+            )
+         ),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFFDBE6F0),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Container(
+          height: ScreenUtil().setHeight(60),
+          margin: EdgeInsets.symmetric(
+            vertical: ScreenUtil().setHeight(28),
+            horizontal: ScreenUtil().setWidth(50),
+          ),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFF0079DE).withOpacity(0.5),
+                spreadRadius: 0,
+                blurRadius: ScreenUtil().setHeight(9),
+                offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+              ),
+            ],
+          ),
+          child: RaisedButton(
+            onPressed: () async {
+              _returnList(selecciones);
+            },
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+            disabledColor: Color(0xFFC4C4C4),
+            textColor: Colors.white,
+            disabledTextColor: Colors.white,
+            padding: EdgeInsets.all(0.0),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: Color(0xFFC4C4C4),
+                gradient: LinearGradient(
+                  colors: [Color(0xFF1F92F3), Color(0xFF0079DE)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(5.0)
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Seleccionar medidas de seguridad",
+                      style: TextStyle(
+                        color: Color(0xFFFFFFFF),
+                        fontWeight: FontWeight.bold,
+                        fontSize: ScreenUtil().setSp(15),
+                        fontFamily: 'SF Pro', 
+                      ),
+                    ),
+
+                    Container(
+                      width: ScreenUtil().setWidth(38),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 10,
+                            top: 0,
+                            child: Icon(Icons.chevron_right, color: Colors.white)
+                          ),
+                          Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.3))
+                        ]
+                      ),
+                    )
+                    
+                  ],
                 ),
               ),
             ),
+          ),
+        ),
+      )
           ],
           // )
           // ,
@@ -241,6 +415,10 @@ class _SelectOptionFromListState extends State<SelectOptionFromList> {
   }
 
   void _selectItem(dynamic e) {
+    Navigator.of(context).pop(e);
+  }
+
+  void _returnList(List<dynamic> e) {
     Navigator.of(context).pop(e);
   }
 }

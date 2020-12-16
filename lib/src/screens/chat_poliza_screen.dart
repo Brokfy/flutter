@@ -80,6 +80,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
     "tipoMuro": null,
     "pisoDepto": null,
     "menos500Mts": null,
+    "medidasSeguridad": null,
   };
 
   @override
@@ -94,11 +95,6 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
     _fixedExtentScrollController =  FixedExtentScrollController();
     _calleController = TextEditingController();
     _numeroDomicilioController = TextEditingController();
-
-    Firebase.initializeApp().whenComplete(() {
-      print("completed");
-      setState(() {});
-    });
   }
 
   @override
@@ -114,6 +110,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: HexColor("#F9FAFA"),
       statusBarIconBrightness: Brightness.dark,
@@ -122,7 +119,6 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
       systemNavigationBarDividerColor: Colors.grey,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
-    super.didChangeDependencies();
     initChat();
   }
 
@@ -272,7 +268,6 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
       ),
       child: Column(
         children: 
-          // dataEntryType == "accionPrincipal" ? _seleccionSeguridadBuild() : 
           dataEntryType == "accionPrincipal" ? _seleccionAccionPrincipalBuild() : 
           dataEntryType == "aseguradora" ? _seleccionAseguradoraBuild() : 
           dataEntryType == "tipoPoliza" ? _seleccionTipoPolizaBuild() : 
@@ -294,40 +289,165 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
           dataEntryType == "tipoMuro" ? _seleccionContratarTipoMuroBuild() : 
           dataEntryType == "pisoDepto" ? _seleccionContratarPisoDeptoBuild() : 
           dataEntryType == "menos500Mts" ? _seleccionContratarMenos500MtsBuild() : 
+          dataEntryType == "medidasSeguridad" ? _seleccionContratarSeguridadBuild() : 
+          dataEntryType == "periodicidadPago" ? _seleccionContratarPeriodicidadPagoBuild() : 
           [],
       ),
     );
   }
-  
-  List<Widget> _seleccionSeguridadBuild() {
+
+  List<Widget> _seleccionContratarPeriodicidadPagoBuild() {
     return [
       Padding(
         padding: EdgeInsets.only(
           top: ScreenUtil().setHeight(28),
           bottom: ScreenUtil().setHeight(28),
         ),
-        child: Container(
-          height: ScreenUtil().setHeight(60),
-          margin: EdgeInsets.symmetric(
-            // vertical: ScreenUtil().setHeight(28),
-            horizontal: ScreenUtil().setWidth(50),
-          ),
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: HexColor("#0079DE").withOpacity(0.5),
-                spreadRadius: 0,
-                blurRadius: ScreenUtil().setHeight(9),
-                offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all( ScreenUtil().setHeight(14) ),
+              width: ScreenUtil().setWidth(307),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: HexColor("#EEEEEE"),
+                  width: ScreenUtil().setWidth(1.5),
+                ),
+                borderRadius: BorderRadius.circular(5.0),
               ),
-            ],
-          ),
-          child: RaisedButton(
-            onPressed: () async {
-              String anioSeleccionado = _continuacionChat[indexPregunta].opciones[0].data[contratarPolizaData["year"]].anio.toString();
-              contratarPolizaData["year"] = anioSeleccionado;
+              child: GestureDetector(
+                onTap: () async {
+                    dynamic seleccion = await Navigator.of(context).push(new MaterialPageRoute<chatSubirPoliza.Opcione>(
+                        builder: (BuildContext context) {
+                          return SelectOptionFromList(
+                            _continuacionChat[indexPregunta].opciones,
+                            [],
+                            title: "Forma de pago",
+                            field: "opcion",
+                            textStyle: TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenUtil().setSp(15),
+                              color: Color(0xFF4F5351)
+                            )
+                          );
+                        },
+                      fullscreenDialog: true
+                    ));
+
+                    if( seleccion != null ) {
+                      setState(() {
+                        contratarPolizaData["formaPago"] = seleccion;
+                      });
+                    }
+                },
+                child: Text(
+                  contratarPolizaData["formaPago"] != null ? contratarPolizaData["formaPago"].opcion : 'Seleccione la forma de pago',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(16),
+                    color: contratarPolizaData["formaPago"] != null ? HexColor("#4F5351") : HexColor("#B3B3B3")
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: RichText(
+                text: TextSpan(
+                  text: 'Enviar',
+                  style: TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: ScreenUtil().setSp(15),
+                    fontWeight: FontWeight.w500,
+                    color: HexColor("#0079DE"),
+                  ),
+                  recognizer: TapGestureRecognizer()
+                      ..onTap = () async { 
+                        if( contratarPolizaData["formaPago"] == null ) return;
+                        _chat.add({
+                          "mensaje": contratarPolizaData["formaPago"].opcion,
+                          "autor": "Usuario"
+                        });
+                        showDataEntry = false;
+                        indexPregunta = _continuacionChat.indexWhere((element) => element.id == _continuacionChat[indexPregunta].opciones[0].action);
+                        setState(() {});
+
+                        for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
+                          writting = true;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
+                          writting = false;
+                          setState(() {});
+                          await Future.delayed(Duration(milliseconds: 200));
+
+                          _chat.add({
+                            "mensaje": pregunta.pregunta,
+                            "autor": "Brokfy"
+                          });  
+                        }
+                        showDataEntry = true;
+                        dataEntryType = "tipoMuro";
+
+                        await Future.delayed(Duration(milliseconds: 200));
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        setState(() {});
+                      }
+                ),
+              )
+            )
+          ],
+        ),
+      )
+    ];
+  }
+  
+  List<Widget> _seleccionContratarSeguridadBuild() {
+    return [
+      Container(
+        height: ScreenUtil().setHeight(60),
+        margin: EdgeInsets.symmetric(
+          vertical: ScreenUtil().setHeight(28),
+          horizontal: ScreenUtil().setWidth(50),
+        ),
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: HexColor("#0079DE").withOpacity(0.5),
+              spreadRadius: 0,
+              blurRadius: ScreenUtil().setHeight(9),
+              offset: Offset(0, ScreenUtil().setHeight(3)), // changes position of shadow
+            ),
+          ],
+        ),
+        child: RaisedButton(
+          onPressed: () async {
+            List<dynamic> seleccion = await Navigator.of(context).push(new MaterialPageRoute<List<dynamic>>(
+                builder: (BuildContext context) {
+                  var medidas = _continuacionChat[indexPregunta]?.opciones[0]?.data;
+                  return SelectOptionFromList(
+                    medidas,
+                    [],
+                    title: "Medidas de seguridad",
+                    field: "etiqueta",
+                    textStyle: TextStyle(
+                      fontFamily: 'SF Pro',
+                      fontWeight: FontWeight.w500,
+                      fontSize: ScreenUtil().setSp(15),
+                      color: Color(0xFF4F5351)
+                    ),
+                    multiple: true,
+                  );
+                },
+              fullscreenDialog: true
+            ));
+
+            if( seleccion != null ) {
+              contratarPolizaData["medidasSeguridad"] = seleccion;
               _chat.add({
-                "mensaje": anioSeleccionado,
+                "mensaje": contratarPolizaData["medidasSeguridad"].map((element) => element.etiqueta).join(", "),
                 "autor": "Usuario"
               });
               showDataEntry = false;
@@ -337,65 +457,76 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
               for (var pregunta in _continuacionChat[indexPregunta].preguntas) {
                 writting = true;
                 setState(() {});
-                await Future.delayed(Duration(milliseconds: 80));
-                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-
                 await Future.delayed(Duration(milliseconds: 20 * pregunta.pregunta.length));
+
                 writting = false;
                 setState(() {});
-                await Future.delayed(Duration(milliseconds: 80));
+                await Future.delayed(Duration(milliseconds: 200));
 
                 _chat.add({
                   "mensaje": pregunta.pregunta,
                   "autor": "Brokfy"
                 });  
               }
-
-              marcas = await ApiService.getMarcasXAnio(_continuacionChat[indexPregunta].opciones[0].endpoint, contratarPolizaData["year"]);
-
               showDataEntry = true;
-              dataEntryType = "marca";
+              dataEntryType = "periodicidadPago";
               setState(() {});
-              await Future.delayed(Duration(milliseconds: 80));
+              
+              await Future.delayed(Duration(milliseconds: 50));
               _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
               setState(() {});
-            },
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-            splashColor: Color.fromRGBO(255, 255, 255, 0.2),
-            disabledColor: HexColor("#C4C4C4"),
-            textColor: Colors.white,
-            disabledTextColor: Colors.white,
-            padding: EdgeInsets.all(0.0),
-            child: Ink(
-              decoration: BoxDecoration(
-                color: HexColor("#C4C4C4"),
-                gradient: LinearGradient(
-                  colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.circular(5.0)
+            }
+          },
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+          disabledColor: HexColor("#C4C4C4"),
+          textColor: Colors.white,
+          disabledTextColor: Colors.white,
+          padding: EdgeInsets.all(0.0),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: HexColor("#C4C4C4"),
+              gradient: LinearGradient(
+                colors: [HexColor("#1F92F3"), HexColor("#0079DE")],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              child: Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Continuar",
-                      style: TextStyle(
-                        color: HexColor("#FFFFFF"),
-                        fontWeight: FontWeight.bold,
-                        fontSize: ScreenUtil().setSp(15),
-                        fontFamily: 'SF Pro', 
-                      ),
+              borderRadius: BorderRadius.circular(5.0)
+            ),
+            child: Container(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Seleccionar medidas de seguridad",
+                    style: TextStyle(
+                      color: HexColor("#FFFFFF"),
+                      fontWeight: FontWeight.bold,
+                      fontSize: ScreenUtil().setSp(15),
+                      fontFamily: 'SF Pro', 
                     ),
-                  ],
-                ),
+                  ),
+
+                  Container(
+                    width: ScreenUtil().setWidth(38),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 10,
+                          top: 0,
+                          child: Icon(Icons.chevron_right, color: Colors.white)
+                        ),
+                        Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.3))
+                      ]
+                    ),
+                  )
+                  
+                ],
               ),
             ),
           ),
-        )
+        ),
       )
     ];
   }
@@ -459,7 +590,7 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
                 });  
               }
               showDataEntry = true;
-              dataEntryType = "tipoPoliza";
+              dataEntryType = "medidasSeguridad";
 
               await Future.delayed(Duration(milliseconds: 200));
               _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -2041,7 +2172,6 @@ class _ChatPolizaScreenState extends State<ChatPolizaScreen> {
           ),
         ),
       )
-      
     ];
   }
 
